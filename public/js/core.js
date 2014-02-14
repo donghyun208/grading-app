@@ -2,6 +2,7 @@
 angular.module('grade', [])
     .controller('gradeController', function($scope) {
         $scope.seats = [];
+        $scope.assignType = 'prelab';
 
         for (var row=0; row<9; row++) {
             $scope.seats.push([])
@@ -10,10 +11,20 @@ angular.module('grade', [])
             }
         }
 
-        $scope.submitscore = function(student, score){
+        $scope.enterScore = function(student, score){
             student.score = score;
             console.log(student.name, "score of: ", student.score)
 
+        };
+
+        $scope.clearScores = function(){};
+            for (var student in $scope.students) {
+                students.score = false;
+            };
+
+        $scope.submitScores = function(){
+            //implement this
+            window.alert('not implemented yet!');
         };
 
         $scope.setclass = function(classID){
@@ -26,6 +37,8 @@ angular.module('grade', [])
             };
             update_class($scope);
         };
+
+
     });
 
 var update_class = function($scope) {

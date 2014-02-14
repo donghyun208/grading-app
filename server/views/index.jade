@@ -22,34 +22,62 @@ block content
                                 b.caret
                             ul.dropdown-menu
                                 li
-                                    a(href="#") Prelab
+                                    a(href="#", ng-click="assignType='prelab'") Prelab
                                 li
-                                    a(href="#") Prelab + Completion
+                                    a(href="#", ng-click="assignType='prelab_completion'") Prelab + Completion
                                 li
-                                    a(href="#") Checkout
+                                    a(href="#", ng-click="assignType='checkout'") Checkout
                                 li.divider
                                 li
                                     a(href="#") Report Sheet
+                        li.dropdown
+                            a.dropdown-toggle(href="#", data-toggle="dropdown") View 
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="#", ng-click="sortAlpha=false") Seating Grid
+                                li
+                                    a(href="#", ng-click="sortAlpha=true") Alphabetical List
+                        li
+                            a(href="#", ng-show="students", ng-click="clearScores()") Clear Scores
+                        li
+                            a(href="#", ng-show="students", ng-click="submitScores()") Submit
 
-
-        table.table.table-bordered(ng-show="students")
+        table.table.table-bordered(ng-show="students && sortAlpha != true")
             tbody
                 tr(ng-repeat='row in seats')
                     td(ng-repeat='seat in row')
                         div(ng-if='!seat[0] == false')
                             div.text-center
                                 h5(float="left") {{seat[0].id}} {{seat[0].name}}
-                                    span.glyphicon.glyphicon-ok(ng-show="seat[0].score")
+                                    span.badge(ng-show="seat[0].score") {{seat[0].score}}
                                 div.btn-group
-                                    button.btn.btn-primary(ng-click="submitscore(seat[0], 5)") 5
-                                    button.btn.btn(ng-click="submitscore(seat[0], 3)") 3
+                                    button.btn.btn-primary(ng-click="enterScore(seat[0], 5)") 5
+                                    button.btn.btn(ng-click="enterScore(seat[0], 3)") 3
                                     div.btn-group
                                         button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
                                             span.caret
                                         ul.dropdown-menu
-                                            h5(ng-click="submitscore(seat[0], 4)") 4
-                                            h5(ng-click="submitscore(seat[0], 2)") 2
-                                            h5(ng-click="submitscore(seat[0], 1)") 1
-                                            h5(ng-click="submitscore(seat[0], 0)") 0
-                                            h5(ng-click="submitscore(seat[0], -1)") absent
+                                            h5(ng-click="enterScore(seat[0], 4)") 4
+                                            h5(ng-click="enterScore(seat[0], 2)") 2
+                                            h5(ng-click="enterScore(seat[0], 1)") 1
+                                            h5(ng-click="enterScore(seat[0], 0)") 0
+                                            h5(ng-click="enterScore(seat[0], -1)") absent
                         div(ng-if='seat[0] == false')
+
+        div.container(ng-show="students && sortAlpha == true")
+            div(ng-repeat="student in students | orderBy:'name'")
+                h5(float="left") {{student.id}} {{student.name}}
+                    span.badge(ng-show="student.score") {{student.score}}
+                div.btn-group
+                    button.btn.btn-primary(ng-click="enterScore(student, 5)") 5
+                    button.btn.btn(ng-click="enterScore(student, 3)") 3
+                    div.btn-group
+                        button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                            span.caret
+                        ul.dropdown-menu
+                            h5(ng-click="enterScore(student, 4)") 4
+                            h5(ng-click="enterScore(student, 2)") 2
+                            h5(ng-click="enterScore(student, 1)") 1
+                            h5(ng-click="enterScore(student, 0)") 0
+                            h5(ng-click="enterScore(student, -1)") absent
