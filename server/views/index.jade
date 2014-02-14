@@ -1,0 +1,55 @@
+extends layout
+block content
+    body(ng-controller='gradeController')
+        nav.navbar.navbar-inverse(role='navigation')
+            div.container-fluid
+                div.navbar-header
+                    button.navbar-toggle(type="button", data-toggle="collapse", data-target="#bs-example-navbar-collapse-1")
+                        span.sr-only Toggle nagivation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href="#") GradingApp
+                div.collapse.navbar-collapse(id="bs-example-navbar-collapse-1")
+                    ul.nav.navbar-nav
+                        li
+                            a(href="#", ng-click="setclass(0)") Thursday AM
+                        li
+                            a(href="#", ng-click="setclass(1)") Thursday PM
+
+                        li.dropdown
+                            a.dropdown-toggle(href="#", data-toggle="dropdown") Assignments
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="#") Prelab
+                                li
+                                    a(href="#") Prelab + Completion
+                                li
+                                    a(href="#") Checkout
+                                li.divider
+                                li
+                                    a(href="#") Report Sheet
+
+
+        table.table.table-bordered(ng-show="students")
+            tbody
+                tr(ng-repeat='row in seats')
+                    td(ng-repeat='seat in row')
+                        div(ng-if='!seat[0] == false')
+                            div.text-center
+                                h5(float="left") {{seat[0].id}} {{seat[0].name}}
+                                    span.glyphicon.glyphicon-ok(ng-show="seat[0].score")
+                                div.btn-group
+                                    button.btn.btn-primary(ng-click="submitscore(seat[0], 5)") 5
+                                    button.btn.btn(ng-click="submitscore(seat[0], 3)") 3
+                                    div.btn-group
+                                        button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                                            span.caret
+                                        ul.dropdown-menu
+                                            h5(ng-click="submitscore(seat[0], 4)") 4
+                                            h5(ng-click="submitscore(seat[0], 2)") 2
+                                            h5(ng-click="submitscore(seat[0], 1)") 1
+                                            h5(ng-click="submitscore(seat[0], 0)") 0
+                                            h5(ng-click="submitscore(seat[0], -1)") absent
+                        div(ng-if='seat[0] == false')
