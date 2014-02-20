@@ -1,0 +1,101 @@
+.addStudentTemplate
+
+    //**************** Add Class ****************
+    script(type="text/ng-template" id="addNewClass.html")
+        div.modal.fade(id='createClassModal')
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                        h4.modal-title Create new class
+                    div.modal-body
+                        input.form-control(type="text" placeholder="class name (no spaces or punctuation)" ng-model="newClassName")
+                    div.modal-footer
+                        div.text-center
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="addClass()") Create Class
+
+    //**************** Add Student ****************
+    script(type="text/ng-template" id="addNewStudent.html")
+        div.modal(id='addNewStudentModal')
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                        h4.modal-title Add new student
+                    div.modal-body
+                        input.form-control(type="text" placeholder="first name" ng-model="studentFirstName")
+                        p
+                        input.form-control(type="text" placeholder="last name" ng-model="studentLastName")
+                        p
+                        input.form-control(type="text" placeholder="ID" ng-model="studentNum")
+                    div.modal-footer
+                        div.text-center
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="addStudent()") Add Student
+
+    //**************** Edit Student ****************
+    script(type="text/ng-template" id="editStudent.html")
+        div.modal(id='editStudentModal')
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true" ng-click="cancelEdit()") &times;
+                        h4.modal-title Edit student
+                    div.modal-body
+                        h6 Don't use this form to swap student seats, otherwise previously assigned grades will not be transfered. Instead, drag and drop the seats directly on the seating chart. (DOES NOT WORK YET! TODO: implement drag and dropping)
+                        label(for="firstName") First Name
+                        input.form-control(id="firstName" type="text" placeholder="first name" ng-model="studentFirstName")
+                        p
+                        label(for="LastName") Last Name
+                        input.form-control(id="LastName" type="text" placeholder="last name" ng-model="studentLastName")
+                        p
+                        label(for="id") ID
+                        input.form-control(id="id" type="text" placeholder="ID" ng-model="studentNum")
+                    div.modal-footer
+                        div.text-center
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="editStudent(false)") Update Student
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="editStudent(true)") Delete Student
+
+    //**************** Add Assignment ****************
+    script(type="text/ng-template" id="addNewAssignment.html")
+        div.modal.fade(id='addAssignmentModal')
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                        h4.modal-title Create new assignment
+                    div.modal-body
+                        input.form-control(type="text" placeholder="assignment name" ng-model="newAssignmentName")
+                    div.modal-footer
+                        div.text-center
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="addAssignment()") Create Assignment
+
+    //**************** Edit Assignment ****************
+    script(type="text/ng-template" id="editAssignment.html")
+        div.modal.fade(id='editAssignmentModal')
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true" ng-click="cancelEdit()") &times;
+                        h4.modal-title Edit assignment
+                    div.modal-body
+                        label(for="assignmentName") Assignment Name
+                        input.form-control(id="assignmentName" type="text" placeholder="assignment name" ng-model="newAssignmentName")
+                    div.modal-footer
+                        div.text-center
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="editAssignment(false)") Edit Assignment
+                            button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="editAssignment(true)") Delete Assignment
+
+    //**************** Grade Buttons ****************
+    script(type="text/ng-template" id="gradeButtons.html")
+        div.btn-group(ng-show="assignment")
+            button.btn.btn-primary(ng-click="enterScore(student, 5)") 5
+            button.btn.btn(ng-click="enterScore(student, 3)") 3
+            div.btn-group
+                button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                    span.caret
+                ul.dropdown-menu
+                    h5(ng-click="enterScore(student, 4)") 4
+                    h5(ng-click="enterScore(student, 2)") 2
+                    h5(ng-click="enterScore(student, 1)") 1
+                    h5(ng-click="enterScore(student, 0)") 0
+                    h5(ng-click="enterScore(student, -1)") absent

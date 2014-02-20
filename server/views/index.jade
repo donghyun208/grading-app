@@ -1,83 +1,163 @@
 extends layout
 block content
-    body(ng-controller='gradeController')
+    body(ng-controller='MainCtrl')
         nav.navbar.navbar-inverse(role='navigation')
             div.container-fluid
                 div.navbar-header
-                    button.navbar-toggle(type="button", data-toggle="collapse", data-target="#bs-example-navbar-collapse-1")
+                    button.navbar-toggle(type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1")
                         span.sr-only Toggle nagivation
                         span.icon-bar
                         span.icon-bar
                         span.icon-bar
-                    a.navbar-brand(href="#") GradingApp
                 div.collapse.navbar-collapse(id="bs-example-navbar-collapse-1")
                     ul.nav.navbar-nav
-                        li
-                            a(href="#", ng-click="setclass(0)") Thursday AM
-                        li
-                            a(href="#", ng-click="setclass(1)") Thursday PM
 
+                        //****************** Settings dropdown ******************
                         li.dropdown
-                            a.dropdown-toggle(href="#", data-toggle="dropdown") Assignments
+                            a.navbar-brand.dropdown-toggle(href="#" data-toggle="dropdown") GradingApp
                                 b.caret
                             ul.dropdown-menu
                                 li
-                                    a(href="#", ng-click="assignType='prelab'") Prelab
+                                    a(href="#" ng-click="") Settings
                                 li
-                                    a(href="#", ng-click="assignType='prelab_completion'") Prelab + Completion
-                                li
-                                    a(href="#", ng-click="assignType='checkout'") Checkout
+                                    a(href="#" ng-click="showAbout=true") About
+
+                        //****************** Class dropdown ******************
+                        li.dropdown
+                            a(href="#" ng-show="viewType == 'edit'" ng-click="viewType='seating'") Finish Editing Class
+                        li.dropdown
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType != 'edit'") {{currentClass || "Choose class"}}
+                                b.caret
+                            ul.dropdown-menu()
+                                li(ng-repeat="(className, classData) in classDict")
+                                    a(href="#" ng-click="setCurrentClass(className)") {{className}}
                                 li.divider
                                 li
-                                    a(href="#") Report Sheet
+                                    a(href="#" data-toggle="modal" data-target="#createClassModal") Add Class
+                                li
+                                    a(href="#" ng-click="viewType='edit'" ng-show="currentClass") Edit Class
+
+                        //****************** Assignments dropdown ******************
                         li.dropdown
-                            a.dropdown-toggle(href="#", data-toggle="dropdown") View 
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="currentClass && viewType != 'edit'") {{currentAssignment.name || "Choose Assignment"}}
+                                b.caret
+                            ul.dropdown-menu
+                                li(ng-repeat="(key, assignment) in assignmentDict")
+                                    a(href="#" ng-click="setAssignment(assignment)") {{assignment.name}}
+                                li.divider
+                                li
+                                    a(href="#" data-toggle="modal" data-target="#addAssignmentModal") Add Assignment
+                                li(ng-show="currentAssignment")
+                                    a(href="#" data-toggle="modal" data-target="#editAssignmentModal" ng-click="newAssignmentName=currentAssignment.name") Edit Assignment
+
+                        //****************** View dropdown ******************
+                        li.dropdown
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="studentDict") View 
                                 b.caret
                             ul.dropdown-menu
                                 li
-                                    a(href="#", ng-click="sortAlpha=false") Seating Grid
+                                    a(href="#" ng-click="viewType='seating'") Seating Grid
                                 li
-                                    a(href="#", ng-click="sortAlpha=true") Alphabetical List
-                        li
-                            a(href="#", ng-show="students", ng-click="clearScores()") Clear Scores
-                        li
-                            a(href="#", ng-show="students", ng-click="submitScores()") Submit
+                                    a(href="#" ng-click="viewType='lastName'") Sort Last Name
+                                li
+                                    a(href="#" ng-click="viewType='firstName'") Sort First Name
 
-        table.table.table-bordered(ng-show="students && sortAlpha != true")
-            tbody
-                tr(ng-repeat='row in seats')
-                    td(ng-repeat='seat in row')
-                        div(ng-if='!seat[0] == false')
-                            div.text-center
-                                h5(float="left") {{seat[0].id}} {{seat[0].name}}
-                                    span.badge(ng-show="seat[0].score") {{seat[0].score}}
-                                div.btn-group
-                                    button.btn.btn-primary(ng-click="enterScore(seat[0], 5)") 5
-                                    button.btn.btn(ng-click="enterScore(seat[0], 3)") 3
-                                    div.btn-group
-                                        button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-                                            span.caret
-                                        ul.dropdown-menu
-                                            h5(ng-click="enterScore(seat[0], 4)") 4
-                                            h5(ng-click="enterScore(seat[0], 2)") 2
-                                            h5(ng-click="enterScore(seat[0], 1)") 1
-                                            h5(ng-click="enterScore(seat[0], 0)") 0
-                                            h5(ng-click="enterScore(seat[0], -1)") absent
-                        div(ng-if='seat[0] == false')
+                        //****************** Other dropdown ******************
+                        li.dropdown
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="studentDict") Other
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="#" ng-click="randomPick()") Random!
+                                li
+                                    a(href="#" ng-click="exportDropbox()") Export to Dropbox
+                        li(ng-hide="initalized")
+                            ul
+                                h4 loading 
+        div.temporary-alerts
+        //***************** About Alert *****************
+        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="showAbout")
+            div.text-center
+                p
+                h3 GradingApp - real time grading web-app
+                h5 made to facilitate attendance / assigning points for Berkeley Chem 1AL classes
+                p
+                h5 all student information and grades are stored using the Dropbox Datastore API, and is stored on your personal dropbox account
+                h5 I do not store or have access to any of your stored information
+                p
+                h4 Questions, comments, bugs - please email
+                span
+                    a(href="mailto:donghyun208@gmail.com") donghyun208@gmail.com
+                p
+                button.btn.btn-warning(type="button" ng-click="showAbout=false") Close
 
-        div.container(ng-show="students && sortAlpha == true")
-            div(ng-repeat="student in students | orderBy:'name'")
-                h5(float="left") {{student.id}} {{student.name}}
-                    span.badge(ng-show="student.score") {{student.score}}
+        //***************** Create Class Alert *****************
+        div.alert.alert-info.fade.in(ng-show="initalized && Object.keys(classDict).length == 0")
+            div.text-center
+                strong You have no classes yet.
+                p
+                p
+                    button.btn.btn-primary(type="button" data-toggle="modal" data-target="#createClassModal") Create new class
+
+        //***************** Add/Edit Students Alert *****************
+        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && Object.keys(studentDict).length == 0 && viewType != 'edit'")
+            div.text-center
+                strong You have no students in your class.
+                p
+                p
+                    button.btn.btn-warning(type="button" ng-click="viewType='edit'") Add students
+
+        //***************** ng-directive Modals *****************
+        add-class
+        add-student
+        edit-student
+        add-assignment
+        edit-assignment
+
+        //***************** Edit Students View *****************
+        div.table-responsive.text-center(ng-show="currentClass && viewType == 'edit'")
+            div
                 div.btn-group
-                    button.btn.btn-primary(ng-click="enterScore(student, 5)") 5
-                    button.btn.btn(ng-click="enterScore(student, 3)") 3
-                    div.btn-group
-                        button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-                            span.caret
-                        ul.dropdown-menu
-                            h5(ng-click="enterScore(student, 4)") 4
-                            h5(ng-click="enterScore(student, 2)") 2
-                            h5(ng-click="enterScore(student, 1)") 1
-                            h5(ng-click="enterScore(student, 0)") 0
-                            h5(ng-click="enterScore(student, -1)") absent
+                    button.btn.btn-primary(ng-click="changeSeatDim(0,1)") Add row
+                    button.btn.btn(ng-click="changeSeatDim(0,-1)") Remove row
+                div.btn-group
+                    button.btn.btn-primary(ng-click="changeSeatDim(1,1)") Add column
+                    button.btn.btn(ng-click="changeSeatDim(1,-1)") Remove column
+            table.table.table-bordered
+                tr(ng-repeat='row in seats')
+                    td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
+                        div(ng-if='seat[0] != false')
+                            h5(float="left") {{seat[0].num}} {{seat[0].firstName}} {{seat[0].lastName}}
+                            button.btn.btn-default.dropdown-toggle(type="button" data-toggle="modal" data-target="#editStudentModal" ng-click="setSelectedStudent(seat[0])") Edit
+
+                        div(ng-if='seat[0] == false')
+                            p
+                            button.btn.btn-default.dropdown-toggle(type="button" data-toggle="modal" data-target="#addNewStudentModal" ng-click="setRowColforStudent(seat[1], seat[2])") Add student
+                            br
+                            p
+            button.btn.btn-danger(type="button" ng-click="deleteClass()") Delete this class
+
+        //***************** Seating Chart View *****************
+        div.table-responsive(ng-show="currentClass && viewType == 'seating'")
+            table.table.table-bordered
+                tr(ng-repeat='row in seats')
+                    td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
+                        div.text-center(ng-if='seat[0] != false')
+                            h5 {{seat[0].num}} {{seat[0].firstName}} {{seat[0].lastName}}&nbsp; 
+                                span.badge(ng-show="currentAssignment && seat[0].score") {{seat[0].score}}
+                            grade-buttons(student="seat[0]" assignment="currentAssignment")
+                        div(ng-if='seat[0] == false')
+                            p
+                            br
+                            p
+
+        //***************** Alphabetical View *****************
+        div.container(ng-show="studentDict && (viewType == 'lastName' || viewType == 'firstName')")
+            div(ng-repeat="student in studentDict | orderObjectBy:viewType")
+                div.text-center
+                    h5(ng-if="viewType == 'lastName'" float="left") {{student.id}} {{student.lastName}}, {{student.firstName}}&nbsp;
+                        span.badge(ng-show="student.score") {{student.score}}
+                    h5(ng-if="viewType == 'firstName'" float="left") {{student.id}} {{student.firstName}} {{student.lastName}}&nbsp;
+                        span.badge(ng-show="student.score") {{student.score}}
+                    grade-buttons(student="student" assignment="currentAssignment")
+    include directiveTemplates
