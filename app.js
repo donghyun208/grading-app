@@ -26,12 +26,6 @@ app.use(function(err, req, res, next) {
 // Main App Page
 app.get('/', routes.index);
 
-// MongoDB API Routes
-// app.get('/polls/polls', routes.list);
-// app.get('/polls/:id', routes.poll);
-// app.post('/polls', routes.create);
-
-
 server.listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
