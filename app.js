@@ -6,7 +6,7 @@ var path = require('path');
 var app = express();
 var server = http.createServer(app);
 
-app.set('port', process.env.VCAP_APP_PORT || 8080);
+app.set('port', process.env.PORT || 8080);
 app.set('views', path.join(__dirname, 'server/views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
