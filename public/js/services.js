@@ -5,6 +5,7 @@ angular.module('gradeServices', [])
         var authenticate = function() {
             var client = new Dropbox.Client({key: '8rgn4aadulsnccd'});
             client.authenticate({interactive: false}, function (error) {
+                console.log(error)
                 if (error) {
                     alert('Authentication error: ' + error);
                 }
@@ -17,7 +18,15 @@ angular.module('gradeServices', [])
                 callback(client);
             },
             getDatastore: function(callback) {
-                var client = authenticate();
+                var client = new Dropbox.Client({key: '8rgn4aadulsnccd'});
+                client.authenticate({interactive: false}, function (error) {
+                    console.log(error)
+                    if (error) {
+                        alert('Authentication error: ' + error);
+                    }
+                });
+                console.log(client)
+                console.log(client.isAuthenticated)
                 var datastoreManager = client.getDatastoreManager();
                 datastoreManager.openDefaultDatastore(function (error, datastore) {
                     if (error) {
