@@ -12,6 +12,7 @@ var app = express();
 // var server = http.createServer(app);
 var server = https.createServer(options, app);
 
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'server/views'));
 app.set('view engine', 'jade');
