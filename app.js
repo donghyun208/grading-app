@@ -10,7 +10,8 @@ var options = {
 
 var app = express();
 // var server = http.createServer(app);
-var server = https.createServer(options, app);
+var serverHTTPS = https.createServer(options, app);
+var server = http.createServer(app);
 
 
 app.set('port', process.env.PORT || 3000);
@@ -36,3 +37,6 @@ app.get('/', routes.index);
 server.listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
+// serverHTTPS.listen(app.get('port'), function(){
+//     console.log('Express server listening on port ' + app.get('port'));
+// });
