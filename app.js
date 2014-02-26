@@ -1,12 +1,18 @@
 var express = require('express');
 var routes = require('./server/routes');
-var http = require('http');
+var https = require('https');
 var path = require('path');
+var fs = require('fs');
+var options = {
+  key: fs.readFileSync('server.key').toString(),
+  cert: fs.readFileSync('cert.pem').toString()
+};
 
 var app = express();
-var server = http.createServer(app);
+// var server = http.createServer(app);
+var server = https.createServer(options, app);
 
-app.set('port', process.env.PORT || 8080);
+app.set('port', 8080);
 app.set('views', path.join(__dirname, 'server/views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
