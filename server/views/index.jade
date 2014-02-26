@@ -29,8 +29,8 @@ block content
                             a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType != 'edit'") {{currentClass || "Choose class"}}
                                 b.caret
                             ul.dropdown-menu()
-                                li(ng-repeat="(className, classData) in classDict")
-                                    a(href="#" ng-click="setCurrentClass(className)") {{className}}
+                                li(ng-repeat="classRec in classList")
+                                    a(href="#" ng-click="setCurrentClass(classRec)") {{classRec.get('name')}}
                                 li.divider
                                 li
                                     a(href="#" data-toggle="modal" data-target="#createClassModal") Add Class
@@ -143,8 +143,8 @@ block content
                 tr(ng-repeat='row in seats')
                     td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
                         div.text-center(ng-if='seat[0] != false')
-                            h5 {{seat[0].num}} {{seat[0].firstName}} {{seat[0].lastName}}&nbsp; 
-                                span.badge(ng-show="currentAssignment && seat[0].score") {{seat[0].score}}
+                            h5 {{seat[0].get('num')}} {{seat[0].get('firstName')}} {{seat[0].get('lastName')}}&nbsp; 
+                                span.badge(ng-show="currentAssignment && seat[0].has('score')") {{seat[0].get('score')}}
                             grade-buttons(student="seat[0]" assignment="currentAssignment")
                         div(ng-if='seat[0] == false')
                             p

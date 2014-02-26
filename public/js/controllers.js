@@ -1,6 +1,6 @@
 // js/controllers.js
 angular.module('gradeControllers', [])
-    .controller('MainCtrl', function($scope, $filter, Dropbox) {
+    .controller('MainCtrl', function($scope, $filter, dropstoreClient, Dropbox) {
         $scope.seats = [];
         $scope.assignType = 'prelab';
         $scope.viewType = 'seating';
@@ -33,75 +33,195 @@ angular.module('gradeControllers', [])
         $scope.initalizeFromDropbox = function(){
             $scope.classDict = {};       // uses name of assignment as key
             $scope.assignmentDict = {}; 
-            Dropbox.getDatastore(function(dstore) {
+            dropstoreClient.create({key: '8rgn4aadulsnccd'})
+                .authenticate({interactive: true})
+                .then(function(datastoreManager){
+                    console.log('completed authentication');
+                    return datastoreManager.openDefaultDatastore();
+                })
+                .then(function(datastore){
+                    // all initaliziation goes in here!
+                    console.log('completed openDefaultDatastore!!!!');
+                    datastore.SubscribeRecordsChanged(function(records) {
+                        for (var ndx in records) {
+                            var record = records[ndx];
+                            console.log(record);
 
-                var scoreTable = dstore.getTable("scores");
-                var infoTable = dstore.getTable("info");
-                var settingsRecord = infoTable.get("settings");
+                            if (record.isDeleted()) {
+                                // remove deleted student from list
+                                for (var s_ndx in $scope.studentList) {
+                                    var curr_record = $scope.studentList[s_ndx];
+                                    if (curr_record.getId() == record.getId()) {
+                                        $scope.tasks.splice($scope.studentList.indexOf(curr_record), 1);
+                                        //deleted task
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                //record is new or updated.
+                                var found = false;
+                                for (var s_ndx in $scope.studentList) {
+                                    var curr_record = $scope.studentList[s_ndx];
+                                    if (curr_record.getId() == record.getId()) {
+                                        $scope.studentList[$scope.studentList.indexOf(curr_record)] = record;
+                                        found = true;
+                                        //udpate task
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    $scope.studentList.push(records[ndx]);
+                                }
+                            };
+                        };
+                    }, 'students');
+                    datastore.SubscribeRecordsChanged(function(records) {
+                        for (var ndx in records) {
+                            var record = records[ndx];
+                            console.log(record);
+                            if (record.isDeleted()) {
+                                // remove deleted student from list
+                                for (var s_ndx in $scope.assignmentList) {
+                                    var curr_record = $scope.assignmentList[s_ndx];
+                                    if (curr_record.getId() == record.getId()) {
+                                        $scope.tasks.splice($scope.assignmentList.indexOf(curr_record), 1);
+                                        //deleted task
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                //record is new or updated.
+                                var found = false;
+                                for (var s_ndx in $scope.assignmentList) {
+                                    var curr_record = $scope.assignmentList[s_ndx];
+                                    if (curr_record.getId() == record.getId()) {
+                                        $scope.assignmentList[$scope.assignmentList.indexOf(curr_record)] = record;
+                                        found = true;
+                                        //udpate task
+                                        break;
+                                    }
+                                }
+                                if(!found) {
+                                    $scope.assignmentList.push(records[ndx]);
+                                }
+                            };
+                        };
+                    }, 'assignments');
+                    datastore.SubscribeRecordsChanged(function(records) {
+                        for (var ndx in records) {
+                            var record = records[ndx];
+                            console.log(record);
+                            if(record.isDeleted()) {
+                                // remove deleted student from list
+                                for(var s_ndx in $scope.classList){
+                                    var curr_record = $scope.classList[s_ndx];
+                                    if(curr_record.getId() == record.getId()){
+                                        $scope.tasks.splice($scope.classList.indexOf(curr_record), 1);
+                                        //deleted task
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                //record is new or updated.
+                                var found = false;
+                                for(var s_ndx in $scope.classList){
+                                    var curr_record = $scope.classList[s_ndx];
+                                    if(curr_record.getId() == record.getId()){
+                                        $scope.classList[$scope.classList.indexOf(curr_record)] = record;
+                                        found = true;
+                                        //udpate task
+                                        break;
+                                    }
+                                }
+                                if(!found){
+                                    $scope.classList.push(records[ndx]);
+                                }
+                            };
+                        };
+                    }, 'classes');
+                    $scope._datastore = datastore;
+                    $scope.studentList = datastore.getTable('students').query();
+                    $scope.assignmentList = datastore.getTable('assignments').query();
+                    $scope.classList = datastore.getTable('classes').query();
+                    // $scope.infoList = datastore.getTable('info').query();
 
-                // setDropboxDefaults(infoTable, scoreTable);
-                if (settingsRecord == null) {
-                    setDropboxDefaults(infoTable, scoreTable);
-                }
-                else {
-                    var classList = infoTable.query({"isClass": true});
-                    // Populate classDict with the class names
-                    for (var i=0; i<classList.length; i++) {
-                        $scope.classDict[classList[i].get("name")] = {};
-                    }
-                };
+                    // $scope.tasks.forEach(function (todo) {
+                    // for (var i=0; i<classList.length; i++) {
+                    //     $scope.classDict[classList[i].get("name")] = {};
+                    // }
+                });
+            // Dropbox.getDatastore(function(dstore) {
 
-                // Populate each class in classDict with the corresponding students
-                var allStudents = dstore.getTable("students").query({});
-                for (var i=0; i<allStudents.length; i++) {
-                    var position = [allStudents[i].get('pos').get(0), allStudents[i].get('pos').get(1)];
-                    var className = allStudents[i].get('className');
-                    var dropboxID = allStudents[i].getId();
-                    var student = {
-                        firstName: allStudents[i].get('firstName'),
-                        lastName:  allStudents[i].get('lastName'),
-                        num:       allStudents[i].get('num'),
-                        pos:       position,
-                        dropboxID: dropboxID
-                    };
-                    $scope.classDict[className][dropboxID] = student;
-                };
+            //     var scoreTable = dstore.getTable("scores");
+            //     var infoTable = dstore.getTable("info");
+            //     var settingsRecord = infoTable.get("settings");
 
-                // Populate assignmentDict with assignemnts
-                // $scope.assignmentTypes = {dropboxID: AssignmentType} <-- from infoTable}
+            //     // setDropboxDefaults(infoTable, scoreTable);
+            //     if (settingsRecord == null) {
+            //         setDropboxDefaults(infoTable, scoreTable);
+            //     }
+            //     else {
+            //         var classList = infoTable.query({"isClass": true});
+            //         // Populate classDict with the class names
+            //         for (var i=0; i<classList.length; i++) {
+            //             $scope.classDict[classList[i].get("name")] = {};
+            //         }
+            //     };
 
-                // AssignmentType = {
-                //      recurring:      bool
-                //      name:           String
-                //      assignments: {dropboxID: Assignment}  <-- from scoreTable
+            //     // Populate each class in classDict with the corresponding students
+            //     var allStudents = dstore.getTable("students").query({});
+            //     for (var i=0; i<allStudents.length; i++) {
+            //         var position = [allStudents[i].get('pos').get(0), allStudents[i].get('pos').get(1)];
+            //         var className = allStudents[i].get('className');
+            //         var dropboxID = allStudents[i].getId();
+            //         var student = {
+            //             firstName: allStudents[i].get('firstName'),
+            //             lastName:  allStudents[i].get('lastName'),
+            //             num:       allStudents[i].get('num'),
+            //             pos:       position,
+            //             dropboxID: dropboxID
+            //         };
+            //         $scope.classDict[className][dropboxID] = student;
+            //     };
 
-                // Assignment = {
-                //      name:             String   
-                //      date:             dateString
-                //      studentDropboxID: score
-                // }
-                $scope.assignmentTypes = {};
+            //     // Populate assignmentDict with assignemnts
+            //     // $scope.assignmentTypes = {dropboxID: AssignmentType} <-- from infoTable}
 
-                var assignmentInfoList = infoTable.query({isAssignment: true});
-                // for (var i=0; i<assignmentInfoList.length; i++) {
-                //     var assignmentTypeFields = assignmentInfoList[i].getFields();
-                //     delete assignmentTypeFields["isAssignment"];
-                //     $scope.assignmentTypes[infoRecord.getId()] = assignmentTypeFields;
-                // }
-                // var assignmentQueryList = scoreTable.query({});
+            //     // AssignmentType = {
+            //     //      recurring:      bool
+            //     //      name:           String
+            //     //      assignments: {dropboxID: Assignment}  <-- from scoreTable
 
-                for (var i=0; i<assignmentInfoList.length; i++) {
-                    var assignment = $scope.processAssignment(assignmentInfoList[i], scoreTable);
-                    $scope.assignmentDict[assignment.dropboxID] = assignment;
-                };
-                // for (var i=0; i<assignmentQueryList.length; i++) {
-                //     var assignment = assignmentQueryList[i].getFields();
-                //     assignment.dropboxID = assignmentQueryList[i].getId();
-                //     $scope.assignmentDict[assignment.dropboxID] = assignment;
-                // };
-                $scope.initalized = true;
-                $scope.$apply();
-            });
+            //     // Assignment = {
+            //     //      name:             String   
+            //     //      date:             dateString
+            //     //      studentDropboxID: score
+            //     // }
+            //     $scope.assignmentTypes = {};
+
+            //     var assignmentInfoList = infoTable.query({isAssignment: true});
+            //     // for (var i=0; i<assignmentInfoList.length; i++) {
+            //     //     var assignmentTypeFields = assignmentInfoList[i].getFields();
+            //     //     delete assignmentTypeFields["isAssignment"];
+            //     //     $scope.assignmentTypes[infoRecord.getId()] = assignmentTypeFields;
+            //     // }
+            //     // var assignmentQueryList = scoreTable.query({});
+
+            //     for (var i=0; i<assignmentInfoList.length; i++) {
+            //         var assignment = $scope.processAssignment(assignmentInfoList[i], scoreTable);
+            //         $scope.assignmentDict[assignment.dropboxID] = assignment;
+            //     };
+            //     // for (var i=0; i<assignmentQueryList.length; i++) {
+            //     //     var assignment = assignmentQueryList[i].getFields();
+            //     //     assignment.dropboxID = assignmentQueryList[i].getId();
+            //     //     $scope.assignmentDict[assignment.dropboxID] = assignment;
+            //     // };
+            //     $scope.initalized = true;
+            //     $scope.$apply();
+            // });
         };
 
         $scope.processAssignment = function(assignmentRecord, scoreTable) {
@@ -137,18 +257,22 @@ angular.module('gradeControllers', [])
             };
         };
 
-        $scope.setCurrentClass = function(className) {
-            $scope.studentDict = $scope.classDict[className];
+        $scope.setCurrentClass = function(classRec) {
+            var className = classRec.get('name');
+            console.log(className);
             var row_list = [];
             var col_list = [];
-            for (var dropboxID in $scope.studentDict) {
-                if ($scope.studentDict.hasOwnProperty(dropboxID)) {
-                    var student = $scope.studentDict[dropboxID];
-                    row_list.push(student.pos[0]);
-                    col_list.push(student.pos[1]);
-                };
-            };
-
+            $scope.students = [];
+            $scope.studentList.forEach(function(studentRec) {
+                if (studentRec.get('className') == className) {
+                    $scope.students.push(studentRec)
+                    var row = studentRec.get('pos').get(0);
+                    var col = studentRec.get('pos').get(1);
+                    row_list.push(row);
+                    col_list.push(col);
+                }
+            });
+            console.log('done parsing')
             if (row_list.length == 0) {
                 var row_max = 8;
                 var col_max = 4;
@@ -157,7 +281,6 @@ angular.module('gradeControllers', [])
                 var row_max = Math.max.apply(Math, row_list) + 1;
                 var col_max = Math.max.apply(Math, col_list) + 1;
             }
-
             // create the seating matrix
             $scope.seats = [];
             for (var row=0; row<row_max; row++) {
@@ -168,14 +291,55 @@ angular.module('gradeControllers', [])
             };
 
             // populate $scope.seats
-            for (var dropboxID in $scope.studentDict) {
-                if ($scope.studentDict.hasOwnProperty(dropboxID)) {
-                    var student = $scope.studentDict[dropboxID];
-                    $scope.seats[student.pos[0]][student.pos[1]][0] = student;
-                };
-            };
-            $scope.currentClass = className;
+            $scope.students.forEach(function(studentRec) {
+                var row = studentRec.get('pos').get(0);
+                var col = studentRec.get('pos').get(1);
+                $scope.seats[row][col][0] = studentRec;
+            });
+            console.log('done parsing')
+
+            $scope.currentClass = classRec;
             $scope.viewType = 'seating';
+
+            // old way 
+            // $scope.students = $scope.classDict[className];
+            // var row_list = [];
+            // var col_list = [];
+            // for (var dropboxID in $scope.studentDict) {
+            //     if ($scope.studentDict.hasOwnProperty(dropboxID)) {
+            //         var student = $scope.studentDict[dropboxID];
+            //         row_list.push(student.pos[0]);
+            //         col_list.push(student.pos[1]);
+            //     };
+            // };
+
+            // if (row_list.length == 0) {
+            //     var row_max = 8;
+            //     var col_max = 4;
+            // }
+            // else {
+            //     var row_max = Math.max.apply(Math, row_list) + 1;
+            //     var col_max = Math.max.apply(Math, col_list) + 1;
+            // }
+
+            // // create the seating matrix
+            // $scope.seats = [];
+            // for (var row=0; row<row_max; row++) {
+            //     $scope.seats.push([])
+            //     for (var col=0; col<col_max; col++) {
+            //         $scope.seats[row].push([false, row, col]);
+            //     };
+            // };
+
+            // // populate $scope.seats
+            // for (var dropboxID in $scope.studentDict) {
+            //     if ($scope.studentDict.hasOwnProperty(dropboxID)) {
+            //         var student = $scope.studentDict[dropboxID];
+            //         $scope.seats[student.pos[0]][student.pos[1]][0] = student;
+            //     };
+            // };
+            // $scope.currentClass = className;
+            // $scope.viewType = 'seating';
         };
 
         $scope.changeSeatDim = function(dimension, delta) {
