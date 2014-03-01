@@ -98,7 +98,7 @@ block content
                     button.btn.btn-primary(type="button" data-toggle="modal" data-target="#createClassModal") Create new class
 
         //***************** Add/Edit Students Alert *****************
-        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && students.length === 0 && viewType !== 'edit'")
+        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && currentStudents.length === 0 && viewType !== 'edit'")
             div.text-center
                 strong You have no students in your class.
                 p
