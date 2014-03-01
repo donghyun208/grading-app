@@ -229,6 +229,7 @@ angular.module('gradeDirectives', [])
                         console.log('Deleting table...')
                         $scope.currentClass.deleteRecord();
                         $scope.currentClass = null;
+                        $scope.currentStudents = null;
                         $scope.viewType = 'seating';
                     };
                 };
