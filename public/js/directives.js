@@ -94,6 +94,7 @@ angular.module('gradeDirectives', [])
                         className: $scope.currentClass.get('name')
                     });
                     $scope.currentSeat.student = studentRec;
+                    $scope.currentStudents.push(studentRec);
 
                     //delete temporary data models
                     $scope.currentSeat = null;
@@ -114,6 +115,7 @@ angular.module('gradeDirectives', [])
                     if (deleteRecord) {
                         $scope.currentSeat.student.deleteRecord();
                         $scope.currentSeat.student = false;
+                        $scope.setCurrentClass($scope.currentClass);
                     }
                     else {
                         $scope.currentSeat.student.update({
@@ -230,6 +232,7 @@ angular.module('gradeDirectives', [])
                         $scope.currentClass.deleteRecord();
                         $scope.currentClass = null;
                         $scope.currentStudents = null;
+                        $scope.seats = null;
                         $scope.viewType = 'seating';
                     };
                 };
