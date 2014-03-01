@@ -174,7 +174,12 @@ angular.module('gradeDirectives', [])
             link: function($scope) {
                 $scope.editAssignment = function(deleteRecord) {
                     if (deleteRecord) {
+                        var assignID = $scope.currentAssignment.getId();
+                        $scope.studentList.forEach(function(studentRec) {
+                            studentRec.set(assignID, null)
+                        });
                         $scope.currentAssignment.deleteRecord();
+                        $scope.currentAssignment = null;
                     }
                     else{
                         $scope.currentAssignment.set("name", $scope.newAssignmentName);
