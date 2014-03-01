@@ -9,7 +9,7 @@
                         button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
                         h4.modal-title Create new class
                     div.modal-body
-                        input.form-control(type="text" placeholder="class name (no spaces or punctuation)" ng-model="newClassName")
+                        input.form-control(type="text" placeholder="class name" ng-model="newClassName")
                     div.modal-footer
                         div.text-center
                             button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="addClass(newClassName)") Create Class
@@ -87,15 +87,22 @@
 
     //**************** Student View ****************
     script(type="text/ng-template" id="studentView.html")
-        table.table.table-bordered
+        div.text-center(ng-show="viewType === 'edit'")
+            div.btn-group
+                button.btn.btn-primary(ng-click="changeSeatDim(0,1)") Add row
+                button.btn.btn(ng-click="changeSeatDim(0,-1)") Remove row
+            div.btn-group
+                button.btn.btn-primary(ng-click="changeSeatDim(1,1)") Add column
+                button.btn.btn(ng-click="changeSeatDim(1,-1)") Remove column
+        table.table.table-bordered.text-center
             tr(ng-repeat='row in seats')
                 td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
                     // actual class view
                     div(ng-if="viewType === 'seating'")
                         div.text-center(ng-if='seat.student !== false')
                             h5 {{seat.student.get('num')}} {{seat.student.get('firstName')}} {{seat.student.get('lastName')}}&nbsp; 
-                                span.badge(ng-show="currentAssignment && seat.student.has('score')") {{seat.student.get('score')}}
-                            grade-buttons(student="seat.student" assignment="currentAssignment")
+                                span.badge(ng-show="currentAssignment") {{seat.grade}}
+                            grade-buttons(ng-show="currentAssignment")
                         div(ng-if='seat.student === false')
                             p
                             br
@@ -110,18 +117,20 @@
                             button.btn.btn-default.dropdown-toggle(type="button" data-toggle="modal" data-target="#addNewStudentModal" ng-click="setSeat(seat)") Add student
                             br
                             p
+        div.text-center
+            button.btn.btn-danger(type="button" ng-show="viewType === 'edit'" ng-click="deleteClass()") Delete this class
 
     //**************** Grade Buttons ****************
     script(type="text/ng-template" id="gradeButtons.html")
-        div.btn-group(ng-show="assignment")
-            button.btn.btn-primary(ng-click="enterScore(student, 5)") 5
-            button.btn.btn(ng-click="enterScore(student, 3)") 3
-            div.btn-group
-                button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-                    span.caret
-                ul.dropdown-menu
-                    h5(ng-click="enterScore(student, 4)") 4
-                    h5(ng-click="enterScore(student, 2)") 2
-                    h5(ng-click="enterScore(student, 1)") 1
-                    h5(ng-click="enterScore(student, 0)") 0
-                    h5(ng-click="enterScore(student, -1)") absent
+        button.btn.btn-primary(ng-click="enterGrade(5)") 5
+        button.btn.btn(ng-click="enterGrade(3)") 3
+        div.btn-group
+            button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                span.caret
+            ul.dropdown-menu
+                h5(ng-click="enterGrade(4)") 4
+                h5(ng-click="enterGrade(2)") 2
+                h5(ng-click="enterGrade(1)") 1
+                h5(ng-click="enterGrade(0)") 0
+                h5(ng-click="enterGrade('absent')") absent
+                h5(ng-click="enterGrade(null)") clear 
