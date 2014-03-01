@@ -24,9 +24,9 @@ block content
 
                         //****************** Class dropdown ******************
                         li.dropdown
-                            a(href="#" ng-show="viewType == 'edit'" ng-click="viewType='seating'") Finish Editing Class
+                            a(href="#" ng-show="viewType === 'edit'" ng-click="viewType='seating'") Finish Editing Class
                         li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType != 'edit'") {{currentClass || "Choose class"}}
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType !== 'edit'") {{currentClass.get('name') || "Choose class"}}
                                 b.caret
                             ul.dropdown-menu()
                                 li(ng-repeat="classRec in classList")
@@ -39,7 +39,7 @@ block content
 
                         //****************** Assignments dropdown ******************
                         li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="currentClass && viewType != 'edit'") {{currentAssignment.name || "Choose Assignment"}}
+                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="currentClass && viewType !== 'edit'") {{currentAssignment.name || "Choose Assignment"}}
                                 b.caret
                             ul.dropdown-menu
                                 li(ng-repeat="(key, assignment) in assignmentDict")
@@ -92,7 +92,7 @@ block content
                 button.btn.btn-warning(type="button" ng-click="showAbout=false") Close
 
         //***************** Create Class Alert *****************
-        div.alert.alert-info.fade.in(ng-show="initalized && Object.keys(classDict).length == 0")
+        div.alert.alert-info.fade.in(ng-show="initalized && Object.keys(classDict).length === 0")
             div.text-center
                 strong You have no classes yet.
                 p
@@ -100,7 +100,7 @@ block content
                     button.btn.btn-primary(type="button" data-toggle="modal" data-target="#createClassModal") Create new class
 
         //***************** Add/Edit Students Alert *****************
-        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && Object.keys(studentDict).length == 0 && viewType != 'edit'")
+        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && students.length === 0 && viewType !== 'edit'")
             div.text-center
                 strong You have no students in your class.
                 p
@@ -108,56 +108,32 @@ block content
                     button.btn.btn-warning(type="button" ng-click="viewType='edit'") Add students
 
         //***************** ng-directive Modals *****************
-        add-class
-        add-student
-        edit-student
-        add-assignment
-        edit-assignment
+        add-class-modal
+        add-student-modal
+        edit-student-modal
+        add-assignment-modal
+        edit-assignment-modal
 
-        //***************** Edit Students View *****************
-        div.table-responsive.text-center(ng-show="currentClass && viewType == 'edit'")
-            div
+        //***************** Students View *****************
+        div.table-responsive.text-center(ng-show="currentClass")
+            div(ng-show="viewType === 'edit'")
                 div.btn-group
                     button.btn.btn-primary(ng-click="changeSeatDim(0,1)") Add row
                     button.btn.btn(ng-click="changeSeatDim(0,-1)") Remove row
                 div.btn-group
                     button.btn.btn-primary(ng-click="changeSeatDim(1,1)") Add column
                     button.btn.btn(ng-click="changeSeatDim(1,-1)") Remove column
-            table.table.table-bordered
-                tr(ng-repeat='row in seats')
-                    td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
-                        div(ng-if='seat[0] != false')
-                            h5(float="left") {{seat[0].num}} {{seat[0].firstName}} {{seat[0].lastName}}
-                            button.btn.btn-default.dropdown-toggle(type="button" data-toggle="modal" data-target="#editStudentModal" ng-click="setSelectedStudent(seat[0])") Edit
+            student-view
+            button.btn.btn-danger(type="button" ng-show="viewType === 'edit'" ng-click="deleteClass()") Delete this class
 
-                        div(ng-if='seat[0] == false')
-                            p
-                            button.btn.btn-default.dropdown-toggle(type="button" data-toggle="modal" data-target="#addNewStudentModal" ng-click="setRowColforStudent(seat[1], seat[2])") Add student
-                            br
-                            p
-            button.btn.btn-danger(type="button" ng-click="deleteClass()") Delete this class
-
-        //***************** Seating Chart View *****************
-        div.table-responsive(ng-show="currentClass && viewType == 'seating'")
-            table.table.table-bordered
-                tr(ng-repeat='row in seats')
-                    td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
-                        div.text-center(ng-if='seat[0] != false')
-                            h5 {{seat[0].get('num')}} {{seat[0].get('firstName')}} {{seat[0].get('lastName')}}&nbsp; 
-                                span.badge(ng-show="currentAssignment && seat[0].has('score')") {{seat[0].get('score')}}
-                            grade-buttons(student="seat[0]" assignment="currentAssignment")
-                        div(ng-if='seat[0] == false')
-                            p
-                            br
-                            p
 
         //***************** Alphabetical View *****************
-        div.container(ng-show="studentDict && (viewType == 'lastName' || viewType == 'firstName')")
+        div.container(ng-show="studentDict && (viewType === 'lastName' || viewType == 'firstName')")
             div(ng-repeat="student in studentDict | orderObjectBy:viewType")
                 div.text-center
-                    h5(ng-if="viewType == 'lastName'" float="left") {{student.id}} {{student.lastName}}, {{student.firstName}}&nbsp;
+                    h5(ng-if="viewType === 'lastName'" float="left") {{student.id}} {{student.lastName}}, {{student.firstName}}&nbsp;
                         span.badge(ng-show="student.score") {{student.score}}
-                    h5(ng-if="viewType == 'firstName'" float="left") {{student.id}} {{student.firstName}} {{student.lastName}}&nbsp;
+                    h5(ng-if="viewType === 'firstName'" float="left") {{student.id}} {{student.firstName}} {{student.lastName}}&nbsp;
                         span.badge(ng-show="student.score") {{student.score}}
                     grade-buttons(student="student" assignment="currentAssignment")
     include directiveTemplates

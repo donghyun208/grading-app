@@ -1,16 +1,16 @@
 // js/controllers.js
 angular.module('gradeDirectives', [])
-    .directive('addClass', function() {
+    .directive('addClassModal', function() {
         return {
             restrict: 'E',
-            templateUrl: 'addNewClass.html',
+            templateUrl: 'addClassModal.html',
             link: function($scope) {
                 $scope.addClass = function() {
                     var newClassName = $scope.newClassName;
                     $scope.newClassName = null;
                     var repeatedName = false;
                     $scope.classList.forEach(function(classRec) {
-                        if (classRec.get('name') == newClassName) {
+                        if (classRec.get('name') === newClassName) {
                             repeatedName = true;
                         };
                     })
@@ -21,7 +21,6 @@ angular.module('gradeDirectives', [])
                             });
                         $scope.setCurrentClass(newClass);
                         // $scope.classDict[newClassName] = {};
-                        $scope.classList.push(newClass);
                         // $scope.$apply();
 
                         // Dropbox.getDatastore(function(dstore) {
@@ -41,30 +40,22 @@ angular.module('gradeDirectives', [])
                 };
             }
         };
-
-
     })
-    .directive('addStudent', function(Dropbox) {
+    .directive('addStudentModal', function() {
         return {
             restrict: 'E',
-            templateUrl: 'addNewStudent.html',
+            templateUrl: 'addStudentModal.html',
             link: function($scope) {
                 $scope.addStudent = function() {
-                    var row = $scope.currRow;
-                    var col = $scope.currCol;
-                    var newStudent = {
-                        firstName: $scope.studentFirstName,
-                        lastName: $scope.studentLastName,
-                        num: $scope.studentNum,
-                        pos: [row, col],
-                        className: $scope.currentClass
-                    }
-
-                    // new way
                     var studentsTable = $scope._datastore.getTable("students"); 
-                    var studentRec = studentsTable.insert(newStudent)
-                    $scope.studentList.push(studentRec);
-                    $scope.seats[row][col][0] = studentRec;
+                    var studentRec = studentsTable.insert({
+                        firstName: $scope.studentFirstName,
+                        lastName:  $scope.studentLastName,
+                        num:       $scope.studentNum,
+                        pos:       $scope.currentSeat.position,
+                        className: $scope.currentClass.get('name')
+                    });
+                    $scope.currentSeat.student = studentRec;
 
                     // old way
                     // Dropbox.getDatastore(function(dstore) {
@@ -78,8 +69,7 @@ angular.module('gradeDirectives', [])
                     // });
 
                     //delete temporary data models
-                    $scope.currRow = null;
-                    $scope.currCol = null;
+                    $scope.currentSeat = null;
                     $scope.studentFirstName = null;
                     $scope.studentLastName = null;
                     $scope.studentNum = null;
@@ -87,60 +77,31 @@ angular.module('gradeDirectives', [])
             }
         };
     })
-    .directive('editStudent', function() {
+    .directive('editStudentModal', function() {
         return {
             restrict: 'E',
-            templateUrl: 'editStudent.html',
+            templateUrl: 'editStudentModal.html',
             link: function($scope) {
                 $scope.editStudent = function(deleteRecord) {
-                    var row = $scope.currRow;
-                    var col = $scope.currCol;
-                    var dropboxID = $scope.currStudent.dropboxID;
-                    var updatedStudent = {
-                        firstName: $scope.studentFirstName,
-                        lastName: $scope.studentLastName,
-                        num: $scope.studentNum,
-                        pos: [row, col],
-                        dropboxID: dropboxID
-                    }
-                    $scope.seats[row][col][0] = updatedStudent;
-
-                    // new way
                     if (deleteRecord) {
-                        $scope.currStudent.deleteRecord();
-                        $scope.seats[row][col][0] = false;
-                        // delete $scope.studentDict[dropboxID]
-                        // $scope.$apply();
+                        $scope.currentSeat.student.deleteRecord();
+                        $scope.currentSeat.student = false;
                     }
                     else {
-                        $scope.currStudent.update(updatedStudent);
+                        $scope.currentSeat.student.update({
+                            firstName: $scope.studentFirstName,
+                            lastName:  $scope.studentLastName,
+                            num:       $scope.studentNum,
+                            pos:       $scope.currentSeat.position
+                        });
                     }
-
-                    // old way
-
-                    // Dropbox.getDatastore(function(dstore) {
-                    //     var table = dstore.getTable('students');
-                    //     var record = table.get(dropboxID);
-                    //     if (deleteRecord) {
-                    //         record.deleteRecord();
-                    //         $scope.seats[row][col][0] = false;
-                    //         delete $scope.studentDict[dropboxID]
-                    //         $scope.$apply();
-                    //     }
-                    //     else {
-                    //         record.update(updatedStudent);
-                    //     }
-                    // });
-                    $scope.currRow = null;
-                    $scope.currCol = null;
+                    $scope.currentSeat = null;
                     $scope.studentFirstName = null;
                     $scope.studentLastName = null;
                     $scope.studentNum = null;
-                    $scope.currStudent = null;
                 };
                 $scope.cancelEdit = function() {
-                    $scope.currRow = null;
-                    $scope.currCol = null;
+                    $scope.currentSeat = null;
                     $scope.studentFirstName = null;
                     $scope.studentLastName = null;
                     $scope.studentNum = null;
@@ -148,10 +109,10 @@ angular.module('gradeDirectives', [])
             }
         }
     })
-    .directive('addAssignment', function(Dropbox) {
+    .directive('addAssignmentModal', function() {
         return {
             restrict: 'E',
-            templateUrl: 'addNewAssignment.html',
+            templateUrl: 'addAssignmentModal.html',
             link: function($scope) {
                 $scope.addAssignment = function() {
 
@@ -160,7 +121,6 @@ angular.module('gradeDirectives', [])
                     var assignmentRecord = scoreTable.insert({
                         "name": $scope.newAssignmentName
                     });
-                    $scope.assignmentList.push(assignmentRecord);
                     $scope.currentAssignment = assignmentRecord;
                     $scope.newAssignmentName = null;
 
@@ -184,10 +144,10 @@ angular.module('gradeDirectives', [])
             }
         };
     })
-    .directive('editAssignment', function(Dropbox) {
+    .directive('editAssignmentModal', function() {
         return {
             restrict: 'E',
-            templateUrl: 'editAssignment.html',
+            templateUrl: 'editAssignmentModal.html',
             link: function($scope) {
                 $scope.editAssignment = function(deleteRecord) {
 
@@ -228,7 +188,7 @@ angular.module('gradeDirectives', [])
             }
         };
     })
-    .directive('gradeButtons', function(Dropbox) {
+    .directive('gradeButtons', function() {
         return {
             restrict: 'E',
             scope: {
@@ -256,4 +216,21 @@ angular.module('gradeDirectives', [])
                 };
             }
         };
-    });
+    })
+    .directive('studentView', function() {
+        return {
+            restrict: 'E',
+            templateUrl: 'studentView.html',
+            link: function($scope) {
+                $scope.setSeat = function(seat) {
+                    $scope.currentSeat = seat;
+                };
+                $scope.editSeat = function(seat) {
+                    $scope.currentSeat = seat;
+                    $scope.studentFirstName = seat.student.get('firstName');
+                    $scope.studentLastName = seat.student.get('lastName');
+                    $scope.studentNum = seat.student.get('num');
+                };
+            }
+        };
+    })

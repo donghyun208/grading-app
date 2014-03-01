@@ -1,7 +1,6 @@
 // js/controllers.js
 angular.module('gradeControllers', [])
-    .controller('MainCtrl', function($scope, $filter, dropstoreClient, Dropbox) {
-        $scope.seats = [];
+    .controller('MainCtrl', function($scope, $filter, dropstoreClient) {
         $scope.assignType = 'prelab';
         $scope.viewType = 'seating';
         // $scope.currentAssignmentHolder = {assign: false};
@@ -35,12 +34,13 @@ angular.module('gradeControllers', [])
             $scope.assignmentDict = {}; 
             dropstoreClient.create({key: '8rgn4aadulsnccd'})
                 .authenticate({interactive: true})
-                .then(function(datastoreManager){
+                .then(function(datastoreManager) {
                     console.log('completed authentication');
                     return datastoreManager.openDefaultDatastore();
                 })
-                .then(function(datastore){
+                .then(function(datastore) {
                     // all initaliziation goes in here!
+                    // datastore.getTable('students').get('_17jd54p82i8_js_hPOSL').deleteRecord();
                     console.log('completed openDefaultDatastore!!!!');
                     datastore.SubscribeRecordsChanged(function(records) {
                         for (var ndx in records) {
@@ -51,9 +51,8 @@ angular.module('gradeControllers', [])
                                 // remove deleted student from list
                                 for (var s_ndx in $scope.studentList) {
                                     var curr_record = $scope.studentList[s_ndx];
-                                    if (curr_record.getId() == record.getId()) {
-                                        $scope.tasks.splice($scope.studentList.indexOf(curr_record), 1);
-                                        //deleted task
+                                    if (curr_record.getId() === record.getId()) {
+                                        $scope.studentList.splice($scope.studentList.indexOf(curr_record), 1);
                                         break;
                                     }
                                 }
@@ -63,10 +62,9 @@ angular.module('gradeControllers', [])
                                 var found = false;
                                 for (var s_ndx in $scope.studentList) {
                                     var curr_record = $scope.studentList[s_ndx];
-                                    if (curr_record.getId() == record.getId()) {
+                                    if (curr_record.getId() === record.getId()) {
                                         $scope.studentList[$scope.studentList.indexOf(curr_record)] = record;
                                         found = true;
-                                        //udpate task
                                         break;
                                     }
                                 }
@@ -81,12 +79,11 @@ angular.module('gradeControllers', [])
                             var record = records[ndx];
                             console.log(record);
                             if (record.isDeleted()) {
-                                // remove deleted student from list
+                                // remove deleted assignment from list
                                 for (var s_ndx in $scope.assignmentList) {
                                     var curr_record = $scope.assignmentList[s_ndx];
-                                    if (curr_record.getId() == record.getId()) {
-                                        $scope.tasks.splice($scope.assignmentList.indexOf(curr_record), 1);
-                                        //deleted task
+                                    if (curr_record.getId() === record.getId()) {
+                                        $scope.assignmentList.splice($scope.assignmentList.indexOf(curr_record), 1);
                                         break;
                                     }
                                 }
@@ -96,10 +93,9 @@ angular.module('gradeControllers', [])
                                 var found = false;
                                 for (var s_ndx in $scope.assignmentList) {
                                     var curr_record = $scope.assignmentList[s_ndx];
-                                    if (curr_record.getId() == record.getId()) {
+                                    if (curr_record.getId() === record.getId()) {
                                         $scope.assignmentList[$scope.assignmentList.indexOf(curr_record)] = record;
                                         found = true;
-                                        //udpate task
                                         break;
                                     }
                                 }
@@ -112,14 +108,12 @@ angular.module('gradeControllers', [])
                     datastore.SubscribeRecordsChanged(function(records) {
                         for (var ndx in records) {
                             var record = records[ndx];
-                            console.log(record);
-                            if(record.isDeleted()) {
-                                // remove deleted student from list
-                                for(var s_ndx in $scope.classList){
+                            if (record.isDeleted()) {
+                                // remove deleted class from list
+                                for (var s_ndx in $scope.classList) {
                                     var curr_record = $scope.classList[s_ndx];
-                                    if(curr_record.getId() == record.getId()){
-                                        $scope.tasks.splice($scope.classList.indexOf(curr_record), 1);
-                                        //deleted task
+                                    if (curr_record.getId() === record.getId()) {
+                                        $scope.classList.splice($scope.classList.indexOf(curr_record), 1);
                                         break;
                                     }
                                 }
@@ -129,10 +123,9 @@ angular.module('gradeControllers', [])
                                 var found = false;
                                 for(var s_ndx in $scope.classList){
                                     var curr_record = $scope.classList[s_ndx];
-                                    if(curr_record.getId() == record.getId()){
+                                    if(curr_record.getId() === record.getId()){
                                         $scope.classList[$scope.classList.indexOf(curr_record)] = record;
                                         found = true;
-                                        //udpate task
                                         break;
                                     }
                                 }
@@ -146,12 +139,7 @@ angular.module('gradeControllers', [])
                     $scope.studentList = datastore.getTable('students').query();
                     $scope.assignmentList = datastore.getTable('assignments').query();
                     $scope.classList = datastore.getTable('classes').query();
-                    // $scope.infoList = datastore.getTable('info').query();
-
-                    // $scope.tasks.forEach(function (todo) {
-                    // for (var i=0; i<classList.length; i++) {
-                    //     $scope.classDict[classList[i].get("name")] = {};
-                    // }
+                    $scope.initalized = true;
                 });
             // Dropbox.getDatastore(function(dstore) {
 
@@ -160,7 +148,7 @@ angular.module('gradeControllers', [])
             //     var settingsRecord = infoTable.get("settings");
 
             //     // setDropboxDefaults(infoTable, scoreTable);
-            //     if (settingsRecord == null) {
+            //     if (settingsRecord === null) {
             //         setDropboxDefaults(infoTable, scoreTable);
             //     }
             //     else {
@@ -242,104 +230,56 @@ angular.module('gradeControllers', [])
         };
 
         $scope.deleteClass = function() {
-            if (confirm('Delete class "' + $scope.currentClass + '"?')) {
+            if (confirm('Delete class "' + $scope.currentClass.get('name') + '"?')) {
                 console.log('Deleting table...')
-                Dropbox.getDatastore(function(dstore) {
-                    var records = dstore.getTable('students').query({"className": $scope.currentClass});
-                    for (var i=0; i<records.length; i++) {
-                        records[i].deleteRecord();
-                    };
-                    console.log('Deleted all records from table!')
-                    delete $scope.classDict[$scope.currentClass];
-                    $scope.currentClass = null;
-                    $scope.$apply();
-                });
+                $scope.currentClass.deleteRecord();
+                $scope.currentClass = null;
+                $scope.viewType = 'seating';
             };
         };
 
         $scope.setCurrentClass = function(classRec) {
             var className = classRec.get('name');
-            console.log(className);
             var row_list = [];
             var col_list = [];
+            $scope.currentClass = classRec;
+            $scope.viewType = 'seating';
             $scope.students = [];
             $scope.studentList.forEach(function(studentRec) {
-                if (studentRec.get('className') == className) {
-                    $scope.students.push(studentRec)
-                    var row = studentRec.get('pos').get(0);
-                    var col = studentRec.get('pos').get(1);
-                    row_list.push(row);
-                    col_list.push(col);
+                if (studentRec.get('className') === className) {
+                    $scope.students.push(studentRec);
+                    row_list.push(studentRec.get('pos').get(0));
+                    col_list.push(studentRec.get('pos').get(1));
                 }
             });
-            console.log('done parsing')
-            if (row_list.length == 0) {
+
+            if (row_list.length === 0) {
                 var row_max = 8;
                 var col_max = 4;
             }
             else {
                 var row_max = Math.max.apply(Math, row_list) + 1;
                 var col_max = Math.max.apply(Math, col_list) + 1;
-            }
+            };
+
             // create the seating matrix
             $scope.seats = [];
             for (var row=0; row<row_max; row++) {
                 $scope.seats.push([])
                 for (var col=0; col<col_max; col++) {
-                    $scope.seats[row].push([false, row, col]);
+                    $scope.seats[row].push({
+                        student: false,
+                        position: [row, col]
+                    });
                 };
             };
 
-            // populate $scope.seats
+            // populate the seating matrix
             $scope.students.forEach(function(studentRec) {
                 var row = studentRec.get('pos').get(0);
                 var col = studentRec.get('pos').get(1);
-                $scope.seats[row][col][0] = studentRec;
+                $scope.seats[row][col].student = studentRec;
             });
-            console.log('done parsing')
-
-            $scope.currentClass = classRec;
-            $scope.viewType = 'seating';
-
-            // old way 
-            // $scope.students = $scope.classDict[className];
-            // var row_list = [];
-            // var col_list = [];
-            // for (var dropboxID in $scope.studentDict) {
-            //     if ($scope.studentDict.hasOwnProperty(dropboxID)) {
-            //         var student = $scope.studentDict[dropboxID];
-            //         row_list.push(student.pos[0]);
-            //         col_list.push(student.pos[1]);
-            //     };
-            // };
-
-            // if (row_list.length == 0) {
-            //     var row_max = 8;
-            //     var col_max = 4;
-            // }
-            // else {
-            //     var row_max = Math.max.apply(Math, row_list) + 1;
-            //     var col_max = Math.max.apply(Math, col_list) + 1;
-            // }
-
-            // // create the seating matrix
-            // $scope.seats = [];
-            // for (var row=0; row<row_max; row++) {
-            //     $scope.seats.push([])
-            //     for (var col=0; col<col_max; col++) {
-            //         $scope.seats[row].push([false, row, col]);
-            //     };
-            // };
-
-            // // populate $scope.seats
-            // for (var dropboxID in $scope.studentDict) {
-            //     if ($scope.studentDict.hasOwnProperty(dropboxID)) {
-            //         var student = $scope.studentDict[dropboxID];
-            //         $scope.seats[student.pos[0]][student.pos[1]][0] = student;
-            //     };
-            // };
-            // $scope.currentClass = className;
-            // $scope.viewType = 'seating';
         };
 
         $scope.changeSeatDim = function(dimension, delta) {
@@ -347,13 +287,13 @@ angular.module('gradeControllers', [])
             var currNumRow = $scope.seats.length;
             var newNumRow = currNumRow;
             var newNumCol = currNumCol;
-            if (dimension == 0) {
+            if (dimension === 0) {
                 // remove a row
-                if (delta == -1 && currNumRow > 1){
+                if (delta === -1 && currNumRow > 1){
                     var allEmpty = true;
                     // check if safe to remove row
                     for (var col=0; col<currNumCol; col++) {
-                        if ($scope.seats[currNumRow-1][col][0] != false){
+                        if ($scope.seats[currNumRow-1][col].student !== false){
                             allEmpty = false;
                         };
                     };
@@ -363,21 +303,24 @@ angular.module('gradeControllers', [])
                     }
                 }
                 // add a row
-                else if (delta == 1 && currNumRow < 49){
+                else if (delta === 1 && currNumRow < 49){
                     $scope.seats.push([]);
                     for (var col=0; col<currNumCol; col++) {
-                        $scope.seats[currNumRow].push([false, currNumRow, col]);
+                        $scope.seats[currNumRow].push({
+                            student: false,
+                            position: [currNumRow, col]
+                        });
                     };
                     newNumRow++;
                 };
             }
-            else if (dimension == 1) {
+            else if (dimension === 1) {
                 // remove a column
-                if (delta == -1 && currNumCol > 1)
+                if (delta === -1 && currNumCol > 1)
                     var allEmpty = true;
                     // check if safe to remove col
                     for (var row=0; row<currNumRow; row++) {
-                        if ($scope.seats[row][currNumCol-1][0] != false){
+                        if ($scope.seats[row][currNumCol-1].student !== false){
                             allEmpty = false;
                         };
                     };
@@ -388,27 +331,16 @@ angular.module('gradeControllers', [])
                         newNumCol--;
                     }
                 // add a column
-                else if (delta == 1 && currNumCol < 9){
+                else if (delta === 1 && currNumCol < 9){
                     for (var row=0; row<currNumRow; row++) {
-                        $scope.seats[row].push([false, row, currNumCol]);
+                        $scope.seats[row].push({
+                            student: false,
+                            position: [row, currNumCol]
+                        });
                     };
                     newNumCol++;
                 };
             };
-        };
-
-        $scope.setRowColforStudent = function(row, col) {
-            $scope.currRow = row;
-            $scope.currCol = col;
-        };
-
-        $scope.setSelectedStudent = function(student) {
-            $scope.currRow = student.pos[0];
-            $scope.currCol = student.pos[1];
-            $scope.currStudent = student;
-            $scope.studentFirstName = student.firstName;
-            $scope.studentLastName = student.lastName;
-            $scope.studentNum = student.num;
         };
 
         $scope.debug = function(arg) {
@@ -432,7 +364,7 @@ angular.module('gradeControllers', [])
             var assignmentList = [];
             matrix.push(first_row)
             for (var dropboxID in $scope.assignmentDict)
-                if (dropboxID != $scope.assignmentDict.hasOwnProperty(dropboxID)) {
+                if (dropboxID !== $scope.assignmentDict.hasOwnProperty(dropboxID)) {
                     first_row.push($scope.assignmentDict[dropboxID]["name"]);
                     assignmentList.push($scope.assignmentDict[dropboxID]);
                 }
