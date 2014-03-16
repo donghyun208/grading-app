@@ -1,137 +1,137 @@
 extends layout
 block content
-    body(ng-controller='MainCtrl')
-        nav.navbar.navbar-inverse(role='navigation')
-            div.container-fluid
-                div.navbar-header
-                    button.navbar-toggle(type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1")
-                        span.sr-only Toggle nagivation
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                div.collapse.navbar-collapse(id="bs-example-navbar-collapse-1")
-                    ul.nav.navbar-nav
-                        //****************** Settings dropdown ******************
-                        li.dropdown
-                            a.navbar-brand.dropdown-toggle(href="#" data-toggle="dropdown") GradingApp
-                                b.caret
-                            ul.dropdown-menu
-                                li
-                                    a(href="#" ng-click="") Settings
-                                li
-                                    a(href="#" ng-click="showAbout=true") About
+  body(ng-controller='MainCtrl')
+    nav.navbar.navbar-inverse(role='navigation')
+      div.container-fluid
+        div.navbar-header
+          button.navbar-toggle(type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1")
+            span.sr-only Toggle nagivation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+        div.collapse.navbar-collapse(id="bs-example-navbar-collapse-1")
+          ul.nav.navbar-nav
+            //****************** Settings dropdown ******************
+            li.dropdown
+              a.navbar-brand.dropdown-toggle(href="#" data-toggle="dropdown") GradingApp
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href="#" ng-click="") Settings
+                li
+                  a(href="#" ng-click="showAbout=true") About
 
-                        //****************** Class dropdown ******************
-                        li.dropdown
-                            a(href="#" ng-show="viewType === 'edit'" ng-click="viewType='seating'") Finish Editing Class
-                        li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType !== 'edit'") {{currentClass.get('name') || "Choose class"}}
-                                b.caret
-                            ul.dropdown-menu()
-                                li(ng-repeat="classRec in classList")
-                                    a(href="#" ng-click="setCurrentClass(classRec)") {{classRec.get('name')}}
-                                li.divider
-                                li
-                                    a(href="#" data-toggle="modal" data-target="#createClassModal") Add Class
-                                li(ng-show="currentClass")
-                                    a(href="#" ng-click="viewType='edit'") Edit Class
+            //****************** Class dropdown ******************
+            li.dropdown
+              a(href="#" ng-show="viewType === 'edit'" ng-click="viewType='seating'") Finish Editing Class
+            li.dropdown
+              a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType !== 'edit'") {{currentClass.get('name') || "Choose class"}}
+                b.caret
+              ul.dropdown-menu()
+                li(ng-repeat="classRec in classList")
+                  a(href="#" ng-click="setCurrentClass(classRec)") {{classRec.get('name')}}
+                li.divider
+                li
+                  a(href="#" data-toggle="modal" data-target="#createClassModal") Add Class
+                li(ng-show="currentClass")
+                  a(href="#" ng-click="viewType='edit'") Edit Class
 
-                        //****************** Assignments dropdown ******************
-                        li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="currentClass && viewType !== 'edit'") {{currentAssignment.get('name') || "Choose Assignment"}}
-                                b.caret
-                            ul.dropdown-menu
-                                li(ng-repeat="assignmentRec in assignmentList")
-                                    a(href="#" ng-click="setCurrentAssignment(assignmentRec)") {{assignmentRec.get('name')}}
-                                li.divider
-                                li
-                                    a(href="#" data-toggle="modal" data-target="#addAssignmentModal") Add Assignment
-                                li(ng-show="currentAssignment")
-                                    a(href="#" data-toggle="modal" data-target="#editAssignmentModal" ng-click="newAssignmentName=currentAssignment.get('name')") Edit Assignment
+            //****************** Assignments dropdown ******************
+            li.dropdown
+              a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="currentClass && viewType !== 'edit'") {{currentAssignment.get('name') || "Choose Assignment"}}
+                b.caret
+              ul.dropdown-menu
+                li(ng-repeat="assignmentRec in assignmentList")
+                  a(href="#" ng-click="setCurrentAssignment(assignmentRec)") {{assignmentRec.get('name')}}
+                li.divider
+                li
+                  a(href="#" data-toggle="modal" data-target="#addAssignmentModal") Add Assignment
+                li(ng-show="currentAssignment")
+                  a(href="#" data-toggle="modal" data-target="#editAssignmentModal" ng-click="newAssignmentName=currentAssignment.get('name')") Edit Assignment
 
-                        //****************** View dropdown ******************
-                        li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="studentDict") View 
-                                b.caret
-                            ul.dropdown-menu
-                                li
-                                    a(href="#" ng-click="viewType='seating'") Seating Grid
-                                li
-                                    a(href="#" ng-click="viewType='lastName'") Sort Last Name
-                                li
-                                    a(href="#" ng-click="viewType='firstName'") Sort First Name
+            //****************** View dropdown ******************
+            li.dropdown
+              a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="studentDict") View 
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href="#" ng-click="viewType='seating'") Seating Grid
+                li
+                  a(href="#" ng-click="viewType='lastName'") Sort Last Name
+                li
+                  a(href="#" ng-click="viewType='firstName'") Sort First Name
 
-                        //****************** Other dropdown ******************
-                        li.dropdown
-                            a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="initalized") Other
-                                b.caret
-                            ul.dropdown-menu
-                                li(ng-show="currentClass")
-                                    a(href="#" ng-click="randomPick()") Pick randomly!
-                                li
-                                    a(href="#" ng-click="exportDropbox()") Export to Dropbox
-                        li.dropdown(ng-hide="initalized")
-                            a loading...
-        div.temporary-alerts
-        //***************** About Alert *****************
-        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="showAbout")
-            div.text-center
-                p
-                h3 GradingApp - real time grading web-app
-                h5 made to facilitate attendance / assigning points for Berkeley Chem 1AL classes
-                p
-                h5 all student information and grades are stored using the Dropbox Datastore API, and is stored on your personal dropbox account
-                h5 I do not store or have access to any of your stored information
-                p
-                h4 Questions, comments, bugs - please email
-                span
-                    a(href="mailto:donghyun208@gmail.com") donghyun208@gmail.com
-                p
-                button.btn.btn-warning(type="button" ng-click="showAbout=false") Close
+            //****************** Other dropdown ******************
+            li.dropdown
+              a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="initalized") Other
+                b.caret
+              ul.dropdown-menu
+                li(ng-show="currentClass")
+                  a(href="#" ng-click="randomPick()") Pick randomly!
+                li
+                  a(href="#" ng-click="exportDropbox()") Export to Dropbox
+            li.dropdown(ng-hide="initalized")
+              a loading...
+    div.temporary-alerts
+    //***************** About Alert *****************
+    div.alert.alert-warning.alert-dismissable.fade.in(ng-show="showAbout")
+      div.text-center
+        p
+        h3 GradingApp - real time grading web-app
+        h5 made to facilitate attendance / assigning points for Berkeley Chem 1AL classes
+        p
+        h5 all student information and grades are stored using the Dropbox Datastore API, and is stored on your personal dropbox account
+        h5 I do not store or have access to any of your stored information
+        p
+        h4 Questions, comments, bugs - please email
+        span
+          a(href="mailto:donghyun208@gmail.com") donghyun208@gmail.com
+        p
+        button.btn.btn-warning(type="button" ng-click="showAbout=false") Close
 
-        //***************** Create Class Alert *****************
-        div.alert.alert-info.fade.in(ng-show="initalized && Object.keys(classDict).length === 0")
-            div.text-center
-                strong You have no classes yet.
-                p
-                p
-                    button.btn.btn-primary(type="button" data-toggle="modal" data-target="#createClassModal") Create new class
+    //***************** Create Class Alert *****************
+    div.alert.alert-info.fade.in(ng-show="initalized && Object.keys(classDict).length === 0")
+      div.text-center
+        strong You have no classes yet.
+        p
+        p
+          button.btn.btn-primary(type="button" data-toggle="modal" data-target="#createClassModal") Create new class
 
-        //***************** Add/Edit Students Alert *****************
-        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && currentStudents.length === 0 && viewType !== 'edit'")
-            div.text-center
-                strong You have no students in your class.
-                p
-                p
-                    button.btn.btn-warning(type="button" ng-click="viewType='edit'") Add students
+    //***************** Add/Edit Students Alert *****************
+    div.alert.alert-warning.alert-dismissable.fade.in(ng-show="initalized && currentStudents.length === 0 && viewType !== 'edit'")
+      div.text-center
+        strong You have no students in your class.
+        p
+        p
+          button.btn.btn-warning(type="button" ng-click="viewType='edit'") Add students
 
-        //***************** Random Students Alert *****************
-        div.alert.alert-warning.alert-dismissable.fade.in(ng-show="randomArray")
-            div.text-center
-                span(ng-repeat="name in randomArray")
-                    {{name}}{{$last ? '' : ', '}} 
-                p
-                p
-                    button.btn.btn-warning(type="button" ng-click="randomArray=null") Close
+    //***************** Random Students Alert *****************
+    div.alert.alert-warning.alert-dismissable.fade.in(ng-show="randomArray")
+      div.text-center
+        span(ng-repeat="name in randomArray")
+          {{name}}{{$last ? '' : ', '}} 
+        p
+        p
+          button.btn.btn-warning(type="button" ng-click="randomArray=null") Close
 
 
-        //***************** ng-directive Modals *****************
-        add-class-modal
-        add-student-modal
-        edit-student-modal
-        add-assignment-modal
-        edit-assignment-modal
+    //***************** ng-directive Modals *****************
+    add-class-modal
+    add-student-modal
+    edit-student-modal
+    add-assignment-modal
+    edit-assignment-modal
 
-        //***************** Students View *****************
-        student-view.table-responsive(ng-show="currentClass")
+    //***************** Students View *****************
+    student-view.table-responsive(ng-show="currentClass")
 
-        //***************** Alphabetical View *****************
-        div.container(ng-show="studentDict && (viewType === 'lastName' || viewType == 'firstName')")
-            div(ng-repeat="student in studentDict | orderObjectBy:viewType")
-                div.text-center
-                    h5(ng-if="viewType === 'lastName'" float="left") {{student.id}} {{student.lastName}}, {{student.firstName}}&nbsp;
-                        span.badge(ng-show="student.score") {{student.score}}
-                    h5(ng-if="viewType === 'firstName'" float="left") {{student.id}} {{student.firstName}} {{student.lastName}}&nbsp;
-                        span.badge(ng-show="student.score") {{student.score}}
-                    grade-buttons(student="student" assignment="currentAssignment")
-    include directiveTemplates
+    //***************** Alphabetical View *****************
+    div.container(ng-show="studentDict && (viewType === 'lastName' || viewType == 'firstName')")
+      div(ng-repeat="student in studentDict | orderObjectBy:viewType")
+        div.text-center
+          h5(ng-if="viewType === 'lastName'" float="left") {{student.id}} {{student.lastName}}, {{student.firstName}}&nbsp;
+            span.badge(ng-show="student.score") {{student.score}}
+          h5(ng-if="viewType === 'firstName'" float="left") {{student.id}} {{student.firstName}} {{student.lastName}}&nbsp;
+            span.badge(ng-show="student.score") {{student.score}}
+          grade-buttons(student="student" assignment="currentAssignment")
+  include directiveTemplates

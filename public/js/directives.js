@@ -1,6 +1,5 @@
 // js/directives.js
-angular.module('gradeDirectives', [])
-
+angular.module('gradeDirectives', ['ngDragDrop'])
     .directive('addClassModal', function() {
         return {
             restrict: 'E',
@@ -34,9 +33,13 @@ angular.module('gradeDirectives', [])
                 $scope.setCurrentClass = function(classRec) {
                     $scope.currentClass = classRec;
                     var className = classRec.get('name');
+                    $scope.viewType = 'seating';
+                    $scope.createSeatingMatrix(className)
+                };
+
+                $scope.createSeatingMatrix = function(className) {
                     var row_list = [];
                     var col_list = [];
-                    $scope.viewType = 'seating';
                     $scope.currentStudents = [];
                     $scope.studentList.forEach(function(studentRec) {
                         if (studentRec.get('className') === className) {
@@ -74,7 +77,7 @@ angular.module('gradeDirectives', [])
                         var col = studentRec.get('pos').get(1);
                         $scope.seats[row][col].student = studentRec;
                     });
-                };
+                }
             }
         };
     })
@@ -84,6 +87,9 @@ angular.module('gradeDirectives', [])
             restrict: 'E',
             templateUrl: 'addStudentModal.html',
             link: function($scope) {
+                if (!$scope.studentNum) {
+                    $scope.studentNum = ''
+                }
                 $scope.addStudent = function() {
                     var studentsTable = $scope._datastore.getTable("students"); 
                     var studentRec = studentsTable.insert({
@@ -114,8 +120,12 @@ angular.module('gradeDirectives', [])
                 $scope.editStudent = function(deleteRecord) {
                     if (deleteRecord) {
                         $scope.currentSeat.student.deleteRecord();
+
+                        for (var i=0; i<$scope.studentList.length; i++) {
+                            if (studentRec === $scope.currentSeat.student)
+                                $scope.studentList[i] = false
+                        }
                         $scope.currentSeat.student = false;
-                        $scope.setCurrentClass($scope.currentClass);
                     }
                     else {
                         $scope.currentSeat.student.update({
@@ -130,7 +140,7 @@ angular.module('gradeDirectives', [])
                     $scope.studentLastName = null;
                     $scope.studentNum = null;
                 };
-                $scope.cancelEdit = function() {
+                $scope.cancelEditStudent = function() {
                     $scope.currentSeat = null;
                     $scope.studentFirstName = null;
                     $scope.studentLastName = null;
@@ -188,7 +198,7 @@ angular.module('gradeDirectives', [])
                     };
                     $scope.newAssignmentName = null;
                 };
-                $scope.cancelEdit = function() {
+                $scope.cancelEditAssignment = function() {
                     $scope.newAssignmentName = null
                 };
             }
