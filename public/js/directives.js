@@ -1,5 +1,5 @@
 // js/directives.js
-angular.module('gradeDirectives', ['ngDragDrop'])
+angular.module('gradeDirectives', [])
     .directive('addClassModal', function() {
         return {
             restrict: 'E',

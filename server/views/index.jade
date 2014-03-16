@@ -109,7 +109,7 @@ block content
     div.alert.alert-warning.alert-dismissable.fade.in(ng-show="randomArray")
       div.text-center
         span(ng-repeat="name in randomArray")
-          {{name}}{{$last ? '' : ', '}} 
+          {{name}}{{$last ? '' : ', '}}
         p
         p
           button.btn.btn-warning(type="button" ng-click="randomArray=null") Close
