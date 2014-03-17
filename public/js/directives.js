@@ -1,5 +1,5 @@
 // js/directives.js
-angular.module('gradeDirectives', [])
+angular.module('gradeDirectives', ['ngTouch'])
     .directive('addClassModal', function() {
         return {
             restrict: 'E',
