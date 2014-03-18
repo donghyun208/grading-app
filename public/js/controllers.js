@@ -15,6 +15,7 @@ angular.module('gradeControllers', [])
                 })
                 .then(function(datastore) {
                     // all initaliziation goes in here!
+                    // datastore.getTable('scores').get('_17iph79l6s0_js_yiU96').deleteRecord();
                     console.log('completed openDefaultDatastore!!!!');
                     datastore.SubscribeRecordsChanged(function(records) {
                         for (var ndx in records) {
@@ -113,8 +114,20 @@ angular.module('gradeControllers', [])
                     $scope.studentList = datastore.getTable('students').query();
                     $scope.assignmentList = datastore.getTable('assignments').query();
                     $scope.classList = datastore.getTable('classes').query();
+                    $scope.processRecurringAssignments();
                     $scope.initalized = true;
                 });
+        };
+
+        $scope.processRecurringAssignments = function() {
+            for(var i in $scope.assignmentList) {
+                var assignment = $scope.assignmentList[i];
+                if (assignment.get('recurring')) {
+
+                    
+                }
+            }
+
         };
 
         $scope.debug = function(arg) {

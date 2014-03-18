@@ -3,8 +3,8 @@ block content
   body(ng-controller='MainCtrl')
     script(type='text/javascript').
       FastClick.attach(document.body);
-    nav.navbar.navbar-inverse(role='navigation')
-      div.container-fluid
+    nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      div.container
         div.navbar-header
           button.navbar-toggle(type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1")
             span.sr-only Toggle nagivation
@@ -15,7 +15,7 @@ block content
           ul.nav.navbar-nav
             //****************** Settings dropdown ******************
             li.dropdown
-              a.navbar-brand.dropdown-toggle(href="#" data-toggle="dropdown") GradingApp
+              a.dropdown-toggle(data-toggle="dropdown") GradingApp
                 b.caret
               ul.dropdown-menu
                 li
@@ -24,12 +24,12 @@ block content
                   a(href="#" ng-click="showAbout=true") About
 
             //****************** Class dropdown ******************
-            li.dropdown
-              a(href="#" ng-show="viewType === 'edit'" ng-click="viewType='seating'") Finish Editing Class
-            li.dropdown
-              a.dropdown-toggle(href="#" data-toggle="dropdown" ng-show="viewType !== 'edit'") {{currentClass.get('name') || "Choose class"}}
+            li.dropdown(ng-show="viewType === 'edit'")
+              a(href="#" ng-click="viewType='seating'") Finish Editing Class
+            li.dropdown(ng-show="viewType !== 'edit'")
+              a.dropdown-toggle(data-toggle="dropdown") {{currentClass.get('name') || "Choose class"}}
                 b.caret
-              ul.dropdown-menu()
+              ul.dropdown-menu
                 li(ng-repeat="classRec in classList")
                   a(href="#" ng-click="setCurrentClass(classRec)") {{classRec.get('name')}}
                 li.divider

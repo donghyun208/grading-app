@@ -65,6 +65,9 @@
             h4.modal-title Create new assignment
           div.modal-body
             input.form-control(type="text" placeholder="assignment name" ng-model="newAssignmentName")
+            div.checkbox
+              input(type="checkbox" ng-model="newAssignmentRecurring")
+              label recurring weekly
           div.modal-footer
             div.text-center
               button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="addAssignment()") Create Assignment
@@ -135,5 +138,5 @@
         h6(ng-click="enterGrade(0)") 0
         h6(ng-click="enterGrade('absent')") absent
         h6(ng-click="enterGrade(null)") clear 
-    button.btn.btn(ng-click="enterGrade(3)") 3
+    button.btn.btn-default(ng-click="enterGrade(3)") 3
     button.btn.btn-primary(ng-click="enterGrade(5)") 5
