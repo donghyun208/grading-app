@@ -1,6 +1,8 @@
 extends layout
 block content
   body(ng-controller='MainCtrl')
+    script(type='text/javascript').
+      FastClick.attach(document.body);
     nav.navbar.navbar-inverse(role='navigation')
       div.container-fluid
         div.navbar-header

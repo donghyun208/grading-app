@@ -15,7 +15,6 @@ angular.module('gradeControllers', [])
                 })
                 .then(function(datastore) {
                     // all initaliziation goes in here!
-                    // datastore.getTable('students').get('_17jd54p82i8_js_hPOSL').deleteRecord();
                     console.log('completed openDefaultDatastore!!!!');
                     datastore.SubscribeRecordsChanged(function(records) {
                         for (var ndx in records) {
