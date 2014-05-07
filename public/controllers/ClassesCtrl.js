@@ -76,6 +76,7 @@ angular.module('classes', ['ui.bootstrap'])
 
       // create the seating matrix
       $scope.current.seats = [];
+
       for (var row=0; row<row_max; row++) {
         $scope.current.seats.push([])
         for (var col=0; col<col_max; col++) {
@@ -87,11 +88,16 @@ angular.module('classes', ['ui.bootstrap'])
         };
       };
 
+      var assignID = false
+      if ($scope.current.assignment)
+        assignID = $scope.current.assignment.getId();
       // populate the seating matrix
       $scope.current.students.forEach(function(studentRec) {
         var row = studentRec.get('pos').get(0);
         var col = studentRec.get('pos').get(1);
         $scope.current.seats[row][col].student = studentRec;
+        if (assignID)
+          $scope.current.seats[row][col].grade = studentRec.get(assignID);
       });
     }
   })
