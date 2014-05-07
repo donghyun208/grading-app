@@ -1,0 +1,79 @@
+//**************** Add Assignment Modal ****************
+script(type="text/ng-template" id="addAssignmentModal.html")
+  div.modal-header
+    button.close(type="button" ng-click="cancel()") &times;
+    h4.modal-title Create new assignment
+  div.modal-body
+    input.form-control(type="text" placeholder="assignment name" ng-model="assignment.name")
+    //div.checkbox
+    //  input(type="checkbox" ng-model="assignment.recurring")
+    //  label recurring weekly
+
+    ul.dropdown-menu
+      h6(ng-model="a") 10
+      h6(ng-model="a") 5
+      h6(ng-model="a") 3
+      h6(ng-model="a") boolean
+
+  div.modal-footer
+    div.text-center
+      button.btn.btn-primary(type="button" ng-click="ok(assignment)") Create Assignment
+
+//**************** Edit Assignment Modal ****************
+script(type="text/ng-template" id="editAssignmentModal.html")
+  div.modal-header
+    button.close(type="button" ng-click="cancel()") &times;
+    h4.modal-title Edit assignment
+  div.modal-body
+    label(for="assignmentName") Assignment Name
+    input.form-control(id="assignmentName" type="text" placeholder="assignment name" ng-model="assignment.name")
+  div.modal-footer
+    div.text-center
+      button.btn.btn-primary(type="button" ng-click="edit(assignment)") Edit Assignment
+      button.btn.btn-primary(type="button" ng-click="delete(assignment)") Delete Assignment
+
+//**************** Add Class Modal ****************
+script(type="text/ng-template" id="addClassModal.html")
+  div.modal-header
+    button.close(type="button" ng-click="cancel()") &times;
+    h4.modal-title Create new class
+  div.modal-body
+    input.form-control(type="text" placeholder="class name" ng-model="classroom.name")
+  div.modal-footer
+    div.text-center
+      button.btn.btn-primary(type="button" ng-click="ok(classroom)") Create Class
+
+//**************** Add Student Modal ****************
+script(type="text/ng-template" id="addStudentModal.html")
+  div.modal-header
+    button.close(type="button" ng-click="cancel()") &times;
+    h4.modal-title Add new student
+  div.modal-body
+    input.form-control(type="text" placeholder="first name" ng-model="student.firstName")
+    p
+    input.form-control(type="text" placeholder="last name" ng-model="student.lastName")
+    p
+    input.form-control(type="text" placeholder="ID" ng-model="student.num")
+  div.modal-footer
+    div.text-center
+      button.btn.btn-primary(type="button" ng-click="ok(student)") Add Student
+
+//**************** Edit Student Modal ****************
+script(type="text/ng-template" id="editStudentModal.html")
+  div.modal-header
+    button.close(type="button" ng-click="cancel()") &times;
+    h4.modal-title Edit student
+  div.modal-body
+    h6 Don't use this form to swap student seats, otherwise previously assigned grades will not be transfered. Instead, drag and drop the seats directly on the seating chart. (DOES NOT WORK YET! TODO: implement drag and dropping)
+    label(for="firstName") First Name
+    input.form-control(id="firstName" type="text" placeholder="first name" ng-model="student.firstName")
+    p
+    label(for="LastName") Last Name
+    input.form-control(id="LastName" type="text" placeholder="last name" ng-model="student.lastName")
+    p
+    label(for="id") ID
+    input.form-control(id="id" type="text" placeholder="ID" ng-model="student.num")
+  div.modal-footer
+    div.text-center
+      button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="edit(student)") Update Student
+      button.btn.btn-primary(type="button" data-dismiss="modal" ng-click="delete(student)") Delete Student
