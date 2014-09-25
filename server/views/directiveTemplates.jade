@@ -40,14 +40,16 @@ script(type="text/ng-template" id="gradeButtons.html")
       button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
         span.caret
       ul.dropdown-menu
-        h6(ng-click="enterGrade(2)") 2
-        h6(ng-click="enterGrade(1)") 1
+        h6(ng-click="enterGrade(1.75)") 1.75
+        h6(ng-click="enterGrade(1.25)") 1.25
+        h6(ng-click="enterGrade('0.75')") 0.75
+        h6(ng-click="enterGrade(0.5)") 0.5
+        h6(ng-click="enterGrade('0.25')") 0.25
         h6(ng-click="enterGrade(0)") 0
-        h6(ng-click="enterGrade('absent')") absent
         h6(ng-click="enterGrade(null)") clear 
-    button.btn.btn-default(ng-click="enterGrade(3)") 3
-    button.btn.btn-default(ng-click="enterGrade(4)") 4
-    button.btn.btn-primary(ng-click="enterGrade(5)") 5
+    button.btn.btn-default(ng-click="enterGrade(1)") 1
+    button.btn.btn-default(ng-click="enterGrade(1.5)") 1.5
+    button.btn.btn-primary(ng-click="enterGrade(2)") 2
 
 //**************** Grade Manual ****************
 script(type="text/ng-template" id="gradeManual.html")

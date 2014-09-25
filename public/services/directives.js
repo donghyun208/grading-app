@@ -12,6 +12,7 @@ angular.module('gradeDirectives', ['ui.bootstrap', 'students'])
     },
     link: function(scope){
       scope.enterGrade = function(grade) {
+        scope.seat.grade = grade;
         var assignID = scope.current.assignment.getId();
         var student = scope.seat.student;
         student.set(assignID, grade);
