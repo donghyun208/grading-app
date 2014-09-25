@@ -30,7 +30,7 @@ angular.module('students', ['ui.bootstrap'])
         var newStudent = $scope._datastore.getTable("students").insert({
           firstName: data.firstName,
           lastName:  data.lastName,
-          num:       data.num,
+          num:       data.num || '',
           pos:       data.seat.position,
           className: $scope.current.classroom.get('name')
         })
@@ -86,11 +86,10 @@ angular.module('students', ['ui.bootstrap'])
           //     $scope.studentList[i] = false
           // }
           var tempStudent = data.seat.student
-          data.seat.student = null
+          data.seat.student = false
           tempStudent.deleteRecord();
         }
         else {
-          console.log(data.seat)
           data.seat.student.update({
             firstName: data.firstName,
             lastName:  data.lastName,

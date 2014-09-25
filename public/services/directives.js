@@ -5,9 +5,13 @@ angular.module('gradeDirectives', ['ui.bootstrap', 'students'])
   return {
     restrict: 'E',
     templateUrl: 'gradeButtons.html',
+    scope: {
+      current: '=',
+      seat: '=',
+      ordering: '@'
+    },
     link: function(scope){
       scope.enterGrade = function(grade) {
-        scope.seat.grade = grade;
         var assignID = scope.current.assignment.getId();
         var student = scope.seat.student;
         student.set(assignID, grade);
@@ -16,7 +20,6 @@ angular.module('gradeDirectives', ['ui.bootstrap', 'students'])
     }
   };
 })
-
 .directive('studentView', function() {
   return {
     restrict: 'E',

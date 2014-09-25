@@ -5,16 +5,9 @@ script(type="text/ng-template" id="addAssignmentModal.html")
     h4.modal-title Create new assignment
   div.modal-body
     input.form-control(type="text" placeholder="assignment name" ng-model="assignment.name")
-    //div.checkbox
-    //  input(type="checkbox" ng-model="assignment.recurring")
-    //  label recurring weekly
-
-    ul.dropdown-menu
-      h6(ng-model="a") 10
-      h6(ng-model="a") 5
-      h6(ng-model="a") 3
-      h6(ng-model="a") boolean
-
+    div.checkbox
+      input(type="checkbox" ng-model="assignment.manualScores")
+      label enter scores manually
   div.modal-footer
     div.text-center
       button.btn.btn-primary(type="button" ng-click="ok(assignment)") Create Assignment
@@ -27,6 +20,9 @@ script(type="text/ng-template" id="editAssignmentModal.html")
   div.modal-body
     label(for="assignmentName") Assignment Name
     input.form-control(id="assignmentName" type="text" placeholder="assignment name" ng-model="assignment.name")
+    div.checkbox
+      input(type="checkbox" ng-model="assignment.manualScores")
+      label enter scores manually
   div.modal-footer
     div.text-center
       button.btn.btn-primary(type="button" ng-click="edit(assignment)") Edit Assignment

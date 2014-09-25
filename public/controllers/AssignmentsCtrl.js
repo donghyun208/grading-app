@@ -12,7 +12,6 @@ angular.module('assignments', ['ui.bootstrap'])
       }
     }
 
-
     var checkRepeatedName = function(assignName, callback) {
       var repeatedName = false;
       var compareName = assignName.toLowerCase()
@@ -40,7 +39,6 @@ angular.module('assignments', ['ui.bootstrap'])
         controller: ModalInstanceCtrl
       })
 
-
       // When "Add Assignment" is clicked:
       modalInstance.result.then(function(assignmentData) {
         var assignName = assignmentData.name.trim()
@@ -49,7 +47,7 @@ angular.module('assignments', ['ui.bootstrap'])
           checkRepeatedName(assignName, function() {
             var newAssignment = $scope._datastore.getTable("assignments").insert({
               "name": assignName,
-              "recurring": assignmentData.recurring ? true : false,
+              "manual": assignmentData.manualScores ? true : false,
             });
             $scope.setCurrentAssignment(newAssignment);
           })
@@ -81,7 +79,10 @@ angular.module('assignments', ['ui.bootstrap'])
         templateUrl: 'editAssignmentModal.html',
         controller: ModalEditInstanceCtrl,
         resolve: {
-          assignment: function() { return { name: $scope.current.assignment.get('name') } }
+          assignment: function() { return {
+            name: $scope.current.assignment.get('name'),
+            manualScores: $scope.current.assignment.get('manual'),
+          } }
         }
       })
 
@@ -103,6 +104,10 @@ angular.module('assignments', ['ui.bootstrap'])
               $scope.current.assignment.set("name", newName);
             })
           }
+          if ($scope.current.assignment.get("manual") !== data.manualScores) {
+            $scope.current.assignment.set("manual", data.manualScores);
+          }
+          $scope.setCurrentAssignment($scope.current.assignment);
         }
       })
     }
@@ -110,7 +115,7 @@ angular.module('assignments', ['ui.bootstrap'])
     $scope.setCurrentAssignment = function(assignment) {
       console.log('setting the assignment')
       $scope.current.assignment = assignment;
-      console.log($scope.current.assignment.get('name'))
+      $scope.current.manualScores = assignment.get('manual');
       var assignID = assignment.getId();
       $scope.current.seats.forEach(function(row) {
         row.forEach(function(seat) {

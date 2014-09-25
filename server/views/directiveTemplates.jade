@@ -8,14 +8,14 @@ script(type="text/ng-template" id="studentView.html")
       button.btn.btn-primary(ng-click="changeSeatDim(1,1)") Add column
       button.btn.btn-warning(ng-click="changeSeatDim(1,-1)") Remove column
   table.table.table-bordered.text-center
-    tr(ng-repeat='row in current.seats')
-      td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}")
+    tr(ng-repeat='row in current.seats', ng-init="colIndex=$index")
+      td(ng-repeat='seat in row' ng-style="{width: 100 / row.length + '%'}", ng-init="rowIndex=$index")
         // actual class view
         div(ng-if="current.viewType === 'seating'")
           div.text-center(ng-if='seat.student !== false')
             h5 {{seat.student.get('num')}} {{seat.student.get('firstName')}} {{seat.student.get('lastName')}}&nbsp; 
               span.badge(ng-show="current.assignment") {{seat.grade}}
-            grade-buttons(ng-show="current.assignment")
+            grade-buttons(ng-show="current.assignment", current="current", seat="seat", ordering="{{rowIndex*100 + colIndex}}")
           div(ng-if='seat.student === false')
             p
             br
@@ -33,15 +33,21 @@ script(type="text/ng-template" id="studentView.html")
 
 //**************** Grade Buttons ****************
 script(type="text/ng-template" id="gradeButtons.html")
-  div.btn-group
-    button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-      span.caret
-    ul.dropdown-menu
-      h6(ng-click="enterGrade(2)") 2
-      h6(ng-click="enterGrade(1)") 1
-      h6(ng-click="enterGrade(0)") 0
-      h6(ng-click="enterGrade('absent')") absent
-      h6(ng-click="enterGrade(null)") clear 
-  button.btn.btn-default(ng-click="enterGrade(3)") 3
-  button.btn.btn-default(ng-click="enterGrade(4)") 4
-  button.btn.btn-primary(ng-click="enterGrade(5)") 5
+  div(ng-if="current.manualScores === true")
+    input.form-control(type="number", ng-model="seat.grade", ng-Change="enterGrade(seat.grade)", tabindex="{{ordering + 1}}")
+  div(ng-if="current.manualScores !== true")
+    div.btn-group
+      button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+        span.caret
+      ul.dropdown-menu
+        h6(ng-click="enterGrade(2)") 2
+        h6(ng-click="enterGrade(1)") 1
+        h6(ng-click="enterGrade(0)") 0
+        h6(ng-click="enterGrade('absent')") absent
+        h6(ng-click="enterGrade(null)") clear 
+    button.btn.btn-default(ng-click="enterGrade(3)") 3
+    button.btn.btn-default(ng-click="enterGrade(4)") 4
+    button.btn.btn-primary(ng-click="enterGrade(5)") 5
+
+//**************** Grade Manual ****************
+script(type="text/ng-template" id="gradeManual.html")
